@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome Kit Poster Reveal | Saranathan College</title>
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <!-- GSAP for animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <!-- Canvas Confetti for celebrate reveal -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+  <!-- Page Loader -->
+  <div class="preloader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">UNWRAPPING WELCOME KIT</div>
+  </div>
+
+  <canvas class="particle-canvas"></canvas>
+  <div class="circle-glow"></div>
+
+  <!-- Header -->
+  <header></header>
+
+  <!-- Main Container -->
+  <main class="container" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+    
+    <div class="animate-slide-up" style="margin-bottom: 20px; max-width:600px;">
+      <h1 style="font-family: var(--font-title); font-size: 2.2rem; font-weight: 800; margin-bottom: 10px;">Unwrap Your Academic Journey</h1>
+      <p style="color:var(--text-secondary); font-size:14px;">Drag and peel the metallic sticker cover below to reveal your Saranathan College welcome poster!</p>
+    </div>
+
+    <!-- Peel Container (Sticker overlay) -->
+    <div class="peel-container animate-scale-in delay-1" id="sticker-container">
+      
+      <!-- Behind (The Welcome Poster) -->
+      <div class="poster-behind" style="padding: 0; background: #06060c;">
+        <img src="poster.png" alt="Welcome Poster" style="width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 12px;">
+      </div>
+
+      <!-- Over (Peelable Canvas Sticker Cover) -->
+      <canvas class="peel-canvas-overlay" id="peel-canvas"></canvas>
+
+    </div>
+
+    <div id="peel-status" style="font-size:13px; color:var(--text-muted); font-weight:500; margin-top:15px; height: 20px;">
+      Peeling Status: 0% Cleared
+    </div>
+
+    <!-- Enter Portal Button (Hidden until sticker is peeled) -->
+    <div class="animate-slide-up" id="portal-btn-wrapper" style="display:none; margin-top:25px;">
+      <button class="ripple-btn btn-login-nav" style="padding: 14px 40px; font-size:15px; border-radius:50px;" onclick="window.location.href='login.html'">
+        Continue to Portal <i class="bx bx-right-arrow-alt" style="vertical-align:middle; font-size:18px;"></i>
+      </button>
+    </div>
+
+  </main>
+
+  <footer></footer>
+
+  <!-- Global scripts -->
+  <script src="js/main.js"></script>
+  
+  <!-- Sticker Peeling logic script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initStickerPeel();
+    });
+
+    function initStickerPeel() {
+      const canvas = document.getElementById('peel-canvas');
+      const container = document.getElementById('sticker-container');
+      const statusText = document.getElementById('peel-status');
+      const portalBtn = document.getElementById('portal-btn-wrapper');
+      
+      if (!canvas || !container) return;
+      
+      const ctx = canvas.getContext('2d');
+      let isDrawing = false;
+      let hasCelebrated = false;
+      
+      // Handle high-res canvas scaling
+      function resizeCanvas() {
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+        drawCover();
+      }
+      
+      // Draw metallic silver cover with text
+      function drawCover() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Gradient for metallic look
+        const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        grad.addColorStop(0, '#94a3b8'); // Slate 400
+        grad.addColorStop(0.3, '#cbd5e1'); // Slate 300
+        grad.addColorStop(0.5, '#64748b'); // Slate 500
+        grad.addColorStop(0.7, '#cbd5e1'); // Slate 300
+        grad.addColorStop(1, '#475569'); // Slate 600
+        
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Add metallic glitter noise pattern
+        for (let i = 0; i < 4000; i++) {
+          const x = Math.random() * canvas.width;
+          const y = Math.random() * canvas.height;
+          const size = Math.random() * 1.5;
+          ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
+          ctx.fillRect(x, y, size, size);
+        }
+        
+        // Overlay Sticker branding text
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 24px Outfit, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('SARANATHAN COLLEGE', canvas.width / 2, canvas.height / 2 - 20);
+        
+        ctx.fillStyle = '#334155';
+        ctx.font = '500 13px Inter, sans-serif';
+        ctx.fillText('Click & Drag to peel sticker cover', canvas.width / 2, canvas.height / 2 + 20);
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      // Scratching / Peeling trigger function
+      function scratch(x, y) {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        // Scratch path radius (representing size of the peel line)
+        ctx.arc(x, y, 35, 0, Math.PI * 2);
+        ctx.fill();
+        
+        checkPeelPercentage();
+      }
+
+      // Track mouse/touch events
+      const getMousePos = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: clientX - rect.left,
+          y: clientY - rect.top
+        };
+      };
+
+      canvas.addEventListener('mousedown', (e) => {
+        isDrawing = true;
+        const pos = getMousePos(e);
+        scratch(pos.x, pos.y);
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        if (!isDrawing) return;
+        const pos = getMousePos(e);
+        scratch(pos.x, pos.y);
+      });
+
+      window.addEventListener('mouseup', () => {
+        isDrawing = false;
+      });
+
+      // Touch screen support
+      canvas.addEventListener('touchstart', (e) => {
+        isDrawing = true;
+        const pos = getMousePos(e);
+        scratch(pos.x, pos.y);
+      });
+
+      canvas.addEventListener('touchmove', (e) => {
+        if (!isDrawing) return;
+        const pos = getMousePos(e);
+        scratch(pos.x, pos.y);
+      });
+
+      canvas.addEventListener('touchend', () => {
+        isDrawing = false;
+      });
+
+      // Compute how many pixels are cleared
+      function checkPeelPercentage() {
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imgData.data;
+        let cleared = 0;
+        
+        for (let i = 3; i < pixels.length; i += 4) {
+          if (pixels[i] === 0) {
+            cleared++;
+          }
+        }
+        
+        const total = pixels.length / 4;
+        const percent = Math.round((cleared / total) * 100);
+        statusText.textContent = `Peeling Status: ${percent}% Cleared`;
+        
+        if (percent > 65 && !hasCelebrated) {
+          hasCelebrated = true;
+          revealCompletePoster();
+        }
+      }
+
+      // Confetti reveal and synthetic audio reward
+      function revealCompletePoster() {
+        // Fade out canvas sticker cover
+        gsap.to(canvas, {
+          opacity: 0,
+          duration: 0.8,
+          onComplete: () => {
+            canvas.style.display = 'none';
+            statusText.textContent = "Welcome Poster Unlocked!";
+          }
+        });
+        
+        // Show proceed button
+        portalBtn.style.display = 'block';
+        gsap.fromTo(portalBtn, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.6 });
+        
+        // Confetti celebration
+        if (typeof confetti !== 'undefined') {
+          confetti({
+            particleCount: 150,
+            spread: 80,
+            origin: { y: 0.6 }
+          });
+        }
+        
+        // Synthetic Welcome sound (Web Audio API)
+        try {
+          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          
+          // Sound chime: A minor chord (A4, C5, E5) played sequentially
+          const playNote = (freq, startTime, duration) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, startTime);
+            
+            gain.gain.setValueAtTime(0.3, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+            
+            osc.start(startTime);
+            osc.stop(startTime + duration);
+          };
+          
+          const now = audioCtx.currentTime;
+          playNote(440, now, 0.4);       // A4
+          playNote(523.25, now + 0.15, 0.4); // C5
+          playNote(659.25, now + 0.3, 0.6);  // E5
+          playNote(880, now + 0.45, 0.8);    // A5
+        } catch (audioErr) {
+          console.warn('Audio synthesis failed:', audioErr);
+        }
+      }
+    }
+  </script>
+</body>
+</html>

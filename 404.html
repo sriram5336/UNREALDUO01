@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found | 404 Error</title>
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; overflow:hidden;">
+
+  <canvas class="particle-canvas"></canvas>
+  <div class="circle-glow"></div>
+  <div class="circle-glow secondary" style="top: 30%; left: 20%;"></div>
+
+  <main style="display:flex; flex-direction:column; align-items:center; gap:20px; padding:30px;">
+    
+    <div class="animate-scale-in" style="font-family:var(--font-title); font-size:8rem; font-weight:800; line-height:1; background:linear-gradient(to right, var(--color-primary), var(--color-danger)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 15px var(--color-primary-glow));">
+      404
+    </div>
+
+    <h1 class="animate-slide-up delay-1" style="font-family:var(--font-title); font-size:22px; font-weight:700;">Lost in Virtual Campus Grid</h1>
+    <p class="animate-slide-up delay-2" style="font-size:13px; color:var(--text-secondary); max-width:400px; line-height:1.5;">
+      The coordinates you requested do not map to any active university node. Try redirecting back to home overview.
+    </p>
+
+    <button class="ripple-btn btn-login-nav animate-slide-up delay-3" style="padding:12px 30px; font-size:13px; border-radius:50px; margin-top:15px;" onclick="window.location.href='index.html'">
+      <i class="bx bx-home-alt"></i> Return to Main Grid
+    </button>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+</body>
+</html>

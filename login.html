@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Login | Saranathan College</title>
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    /* Custom simple styling for tabs in card */
+    .login-tabs-container {
+      display: flex;
+      border-bottom: 1px solid var(--border-glass);
+      margin-bottom: 25px;
+    }
+    .login-tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .login-tab:hover {
+      color: var(--text-primary);
+      background: var(--bg-glass);
+    }
+    .login-tab.active {
+      color: var(--color-primary);
+      border-bottom: 2px solid var(--color-primary);
+    }
+    /* Role-specific info panels */
+    .role-info-panel {
+      display: none;
+      padding: 15px 18px;
+      background: var(--bg-glass);
+      border-radius: 10px;
+      border: 1px solid var(--border-glass);
+      margin-bottom: 20px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .role-info-panel.active {
+      display: block;
+    }
+    .role-info-panel h4 {
+      font-family: var(--font-title);
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .role-info-panel ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .role-info-panel ul li {
+      padding: 4px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .role-info-panel ul li i {
+      font-size: 14px;
+      width: 18px;
+      text-align: center;
+    }
+    .role-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+    .role-badge.student {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--color-primary);
+    }
+    .role-badge.staff {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--color-secondary);
+    }
+    .role-badge.admin {
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--color-accent);
+    }
+    .help-section {
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      border-left: 3px solid var(--color-primary);
+    }
+    .help-section p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin: 3px 0;
+    }
+    /* Forgot PW Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      width: 100%;
+      max-width: 450px;
+    }
+    .modal-status-msg {
+      margin-top: 15px;
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-size: 13px;
+      display: none;
+    }
+    .modal-status-msg.success {
+      background: rgba(16, 185, 129, 0.15);
+      color: #a7f3d0;
+      border: 1px solid var(--color-secondary);
+    }
+    .modal-status-msg.danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid var(--color-danger);
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 6px;
+      font-size: 11px;
+    }
+    .feature-item i {
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Page Loader -->
+  <div class="preloader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">CONNECTING SECURE PORTAL</div>
+  </div>
+
+  <canvas class="particle-canvas"></canvas>
+  <div class="circle-glow"></div>
+
+  <!-- Header -->
+  <header></header>
+
+  <!-- Login Area -->
+  <main class="container" style="display:flex; justify-content:center; align-items:center; min-height:85vh;">
+    
+    <div class="glass-card animate-scale-in" style="width:100%; max-width:480px; padding:40px 30px;">
+      
+      <!-- College header in card -->
+      <div style="text-align:center; margin-bottom:20px;">
+        <h3 style="font-family:var(--font-title); font-size:22px; font-weight:800; color:var(--text-primary);">Saranathan College Portal</h3>
+        <p style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Secure single sign-on access to all modules</p>
+      </div>
+
+      <!-- Login tabs switcher -->
+      <div class="login-tabs-container">
+        <div class="login-tab active" data-role="student">
+          <i class="bx bx-user"></i> Student
+        </div>
+        <div class="login-tab" data-role="staff">
+          <i class="bx bx-chalkboard"></i> Staff
+        </div>
+        <div class="login-tab" data-role="admin">
+          <i class="bx bx-shield-quarter"></i> Admin
+        </div>
+      </div>
+
+      <!-- STUDENT Role Info Panel -->
+      <div class="role-info-panel active" id="panel-student">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+          <i class="bx bx-user-circle" style="font-size:28px; color:var(--color-primary);"></i>
+          <div>
+            <h4 style="margin:0;">Student Academic Portal</h4>
+            <span class="role-badge student">Student Access</span>
+          </div>
+        </div>
+        <p style="color:var(--text-secondary); font-size:11px; margin-bottom:8px;">
+          Access your academic records, attendance, marks, library, fee payments, and placement resources — all in one dashboard.
+        </p>
+        <div class="feature-grid">
+          <div class="feature-item"><i class="bx bx-doughnut-chart" style="color:var(--color-primary);"></i> Attendance Tracker</div>
+          <div class="feature-item"><i class="bx bx-edit" style="color:var(--color-secondary);"></i> Marks &amp; GPA</div>
+          <div class="feature-item"><i class="bx bx-calendar" style="color:#f59e0b;"></i> Class Timetable</div>
+          <div class="feature-item"><i class="bx bx-book-open" style="color:#8b5cf6;"></i> Library Catalog</div>
+          <div class="feature-item"><i class="bx bx-credit-card" style="color:#10b981;"></i> Fee Payment</div>
+          <div class="feature-item"><i class="bx bx-briefcase" style="color:#f97316;"></i> Placements</div>
+          <div class="feature-item"><i class="bx bx-note" style="color:var(--color-primary);"></i> Study Notes</div>
+          <div class="feature-item"><i class="bx bx-bus" style="color:var(--color-secondary);"></i> Bus Routes</div>
+        </div>
+        <div class="help-section">
+          <p><strong>📘 New Students:</strong> Use your registered roll number (e.g., <em>student1</em>) and default password provided during enrollment.</p>
+          <p><strong>🔑 Forgot Password?</strong> Use the link below or contact the department office for a reset.</p>
+          <p><strong>🕒 Portal Hours:</strong> 24/7 Access | Library catalog available during 8 AM – 8 PM</p>
+        </div>
+      </div>
+
+      <!-- STAFF Role Info Panel -->
+      <div class="role-info-panel" id="panel-staff">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+          <i class="bx bx-chalkboard" style="font-size:28px; color:var(--color-secondary);"></i>
+          <div>
+            <h4 style="margin:0;">Faculty &amp; Staff Portal</h4>
+            <span class="role-badge staff">Staff Access</span>
+          </div>
+        </div>
+        <p style="color:var(--text-secondary); font-size:11px; margin-bottom:8px;">
+          Manage student approvals, upload marks, view your timetable, access staff directory, and oversee departmental activities.
+        </p>
+        <div class="feature-grid">
+          <div class="feature-item"><i class="bx bx-user-check" style="color:var(--color-secondary);"></i> Student Approvals</div>
+          <div class="feature-item"><i class="bx bx-edit" style="color:var(--color-primary);"></i> Upload Marks</div>
+          <div class="feature-item"><i class="bx bx-calendar-week" style="color:#f59e0b;"></i> Faculty Timetable</div>
+          <div class="feature-item"><i class="bx bx-book-content" style="color:#8b5cf6;"></i> Course Materials</div>
+          <div class="feature-item"><i class="bx bx-group" style="color:#10b981;"></i> Staff Directory</div>
+          <div class="feature-item"><i class="bx bx-notification" style="color:#f97316;"></i> Notice Board</div>
+          <div class="feature-item"><i class="bx bx-bar-chart" style="color:var(--color-primary);"></i> Class Performance</div>
+          <div class="feature-item"><i class="bx bx-message-dots" style="color:var(--color-secondary);"></i> Internal Communication</div>
+        </div>
+        <div class="help-section">
+          <p><strong>👩‍🏫 New Faculty:</strong> Use your staff username (e.g., <em>staff1</em>) with the password provided by the administration.</p>
+          <p><strong>📋 Marks Upload:</strong> Internal marks can be uploaded subject-wise. Ensure attendance eligibility before uploading.</p>
+          <p><strong>🏢 Cabin Directory:</strong> View all staff cabins and HOD contact details in the Staff Directory tab.</p>
+        </div>
+      </div>
+
+      <!-- ADMIN Role Info Panel -->
+      <div class="role-info-panel" id="panel-admin">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+          <i class="bx bx-shield-quarter" style="font-size:28px; color:var(--color-accent);"></i>
+          <div>
+            <h4 style="margin:0;">System Administration Desk</h4>
+            <span class="role-badge admin">Admin Access</span>
+          </div>
+        </div>
+        <p style="color:var(--text-secondary); font-size:11px; margin-bottom:8px;">
+          Full system control — manage user accounts, oversee database operations, monitor campus metrics, and configure portal settings.
+        </p>
+        <div class="feature-grid">
+          <div class="feature-item"><i class="bx bx-user-pin" style="color:var(--color-accent);"></i> User Management</div>
+          <div class="feature-item"><i class="bx bx-server" style="color:var(--color-primary);"></i> Database Control</div>
+          <div class="feature-item"><i class="bx bx-line-chart" style="color:var(--color-secondary);"></i> System Analytics</div>
+          <div class="feature-item"><i class="bx bx-book-reader" style="color:#f59e0b;"></i> Library Oversight</div>
+          <div class="feature-item"><i class="bx bx-bell" style="color:#8b5cf6;"></i> Notice Management</div>
+          <div class="feature-item"><i class="bx bx-cog" style="color:#10b981;"></i> Configuration</div>
+          <div class="feature-item"><i class="bx bx-log-in" style="color:#f97316;"></i> Access Logs</div>
+          <div class="feature-item"><i class="bx bx-data" style="color:var(--color-accent);"></i> Backup &amp; Restore</div>
+        </div>
+        <div class="help-section">
+          <p><strong>🔐 Authorized Access Only:</strong> Administrative privileges are granted exclusively to authorized IT and management personnel.</p>
+          <p><strong>🗄️ Database Management:</strong> Use the Database Control panel to manage student, staff, and library records.</p>
+          <p><strong>⚠️ Audit Trail:</strong> All admin actions are logged. Review access logs regularly for security compliance.</p>
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" style="display:flex; flex-direction:column; gap:20px;">
+        <!-- Hidden role input -->
+        <input type="hidden" name="role" id="login-role" value="student">
+        
+        <!-- Error Message Panel -->
+        <div id="login-error-msg" style="display:none; padding:12px; border-radius:8px; background:rgba(239,68,68,0.12); color:#fca5a5; border:1px solid var(--color-danger); font-size:13px;">
+          <!-- error text -->
+        </div>
+
+        <div class="form-group">
+          <label for="login-username" id="username-label">Student ID</label>
+          <input type="text" id="login-username" class="form-input" placeholder="e.g. student1" required autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label for="login-password">Password</label>
+            <a href="#" id="forgot-pw-link" style="font-size:12px; color:var(--color-primary); text-decoration:none;">Forgot Password?</a>
+          </div>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="ripple-btn form-submit-btn" style="width:100%; padding:14px; text-align:center; display:flex; justify-content:center; gap:8px;">
+          <i class="bx bx-log-in-circle"></i> Log In to Dashboard
+        </button>
+
+        <p style="text-align:center; font-size:12px; color:var(--text-secondary); margin-top:10px;">
+          Don't have an account? <a href="register.html" style="color:var(--color-primary); text-decoration:none; font-weight:600;">Register here</a>
+        </p>
+
+      </form>
+      
+    </div>
+
+  </main>
+
+  <!-- Forgot Password Modal Overlay -->
+  <div class="modal-overlay" id="forgot-pw-modal">
+    <div class="glass-card modal-content animate-scale-in">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="font-family:var(--font-title); font-size:18px; font-weight:800;">Reset Password</h3>
+        <button id="modal-close-btn" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:24px;">
+          <i class="bx bx-x"></i>
+        </button>
+      </div>
+
+      <p style="font-size:12px; color:var(--text-secondary); line-height:1.5; margin-bottom:20px;">
+        Enter your Roll Number and registered Email Address. Your password will be reset to the default: <strong>reset123</strong>.
+      </p>
+
+      <form id="forgot-pw-form" style="display:flex; flex-direction:column; gap:15px;">
+        <div class="form-group">
+          <label for="forgot-roll">Student ID</label>
+          <input type="text" id="forgot-roll" class="form-input" placeholder="e.g. student1" required>
+        </div>
+        <div class="form-group">
+          <label for="forgot-email">Registered Email Address</label>
+          <input type="email" id="forgot-email" class="form-input" placeholder="e.g. arun@saranathan.ac.in" required>
+        </div>
+
+        <button type="submit" class="form-submit-btn" style="width:100%; margin-top:10px;">Verify & Reset</button>
+
+        <!-- Status message -->
+        <div id="forgot-status-msg" class="modal-status-msg"></div>
+      </form>
+    </div>
+  </div>
+
+  <footer></footer>
+
+  <!-- Scripts -->
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/login.js"></script>
+</body>
+</html>
+

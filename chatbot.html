@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saranathan AI Chatbot | Google Gemini Assistant</title>
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    /* Query suggest styling button */
+    .preset-query-btn {
+      padding: 8px 15px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      border-radius: 20px;
+      color: var(--text-secondary);
+      font-size: 11px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .preset-query-btn:hover {
+      background: var(--bg-glass-active);
+      color: var(--color-primary);
+      border-color: var(--color-primary-glow);
+    }
+    
+    /* Clean styles when embedded inside dashboard iframe */
+    .in-iframe header, .in-iframe footer, .in-iframe section {
+      display: none !important;
+    }
+    .in-iframe body {
+      background: transparent !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .in-iframe .particle-canvas, .in-iframe .circle-glow {
+      display: none !important;
+    }
+    .in-iframe main {
+      padding: 0 !important;
+      margin: 0 !important;
+      min-height: auto !important;
+      width: 100% !important;
+      align-items: stretch !important;
+    }
+    .in-iframe .glass-card {
+      box-shadow: none !important;
+      border: none !important;
+      border-radius: 0 !important;
+      height: 100vh !important;
+      max-width: 100% !important;
+      background: transparent !important;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    if (window.self !== window.top) {
+      document.documentElement.classList.add('in-iframe');
+    }
+  </script>
+
+  <!-- Page Loader -->
+  <div class="preloader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">WAKING UP GEMINI ENGINE</div>
+  </div>
+
+  <canvas class="particle-canvas"></canvas>
+  <div class="circle-glow"></div>
+
+  <!-- Header -->
+  <header></header>
+
+  <main class="container" style="min-height: 85vh; display:flex; flex-direction:column; align-items:center;">
+    
+    <section class="animate-slide-up" style="margin-bottom:25px; text-align:center;">
+      <h1 style="font-family:var(--font-title); font-size:2.5rem; font-weight:800; display:flex; justify-content:center; align-items:center; gap:10px;">
+        <i class="bx bx-bot" style="color:var(--color-primary);"></i> Saranathan AI Chatbot
+      </h1>
+      <p style="color:var(--text-secondary); margin-top:5px; font-size:14px;">Powered by Google Gemini. Locate books, classrooms, cabins, and query placement rules.</p>
+    </section>
+
+    <!-- Chat Interface Card wrapper -->
+    <div class="glass-card animate-scale-in delay-1" style="width:100%; max-width:850px; padding:0; overflow:hidden; display:flex; flex-direction:column; height:500px; border-radius:16px;">
+      
+      <!-- Top banner status indicator -->
+      <div style="background:var(--bg-glass-active); padding:15px 20px; border-bottom:1px solid var(--border-glass); display:flex; align-items:center; gap:10px;">
+        <div style="width:10px; height:10px; border-radius:50%; background:var(--color-secondary); box-shadow: 0 0 10px var(--color-secondary);"></div>
+        <span style="font-size:13px; font-weight:600; color:var(--text-primary);">Gemini-Pro Model Active</span>
+      </div>
+
+      <!-- Messages History -->
+      <div class="chat-history" id="standalone-chat-history" style="flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:15px; background:transparent;">
+        <div class="chat-bubble bot">
+          Hello! Welcome to Saranathan College of Engineering AI Portal. How can I help you find book stacks, locations, HOD cabins, timings or placement eligibility today?
+        </div>
+      </div>
+
+      <!-- suggestion presets -->
+      <div style="padding:10px 20px; display:flex; gap:8px; flex-wrap:wrap; background:rgba(255,255,255,0.01); border-top:1px solid var(--border-glass);">
+        <button class="preset-query-btn" data-query="Where is Operating System book?">Locate OS Book</button>
+        <button class="preset-query-btn" data-query="Where is DBMS Lab?">DBMS Lab Location</button>
+        <button class="preset-query-btn" data-query="Where is Dr. Kumar's Cabin?">Dr. Kumar Cabin</button>
+        <button class="preset-query-btn" data-query="Placement Eligibility?">Placement Eligibility</button>
+        <button class="preset-query-btn" data-query="Bus Timings?">Bus Timings</button>
+        <button class="preset-query-btn" data-query="What are the college working hours?">College Hours</button>
+        <button class="preset-query-btn" data-query="Tell me about the Computer Science department.">CSE Department Info</button>
+        <button class="preset-query-btn" data-query="What is Artificial Intelligence?">What is AI?</button>
+        <button class="preset-query-btn" data-query="Write a short poem about college life.">Poem on College Life</button>
+      </div>
+
+      <!-- Typing Row -->
+      <div class="chat-input-row" style="background:var(--bg-glass-active);">
+        <input type="text" id="standalone-chat-input" class="chat-input" placeholder="Type your college query (e.g. where is DBMS lab?)...">
+        <button id="standalone-chat-send" class="chat-send-btn"><i class="bx bx-send"></i></button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer></footer>
+
+  <!-- Scripts -->
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/chatbot.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,18 @@
+{
+  "name": "ai-college-portal",
+  "version": "1.0.0",
+  "description": "Saranathan College of Engineering Interactive AI Portal",
+  "main": "index.html",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "sqlite3": "^5.1.7",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

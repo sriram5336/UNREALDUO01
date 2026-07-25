@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notice Board | Saranathan College</title>
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+
+  <!-- Page Loader -->
+  <div class="preloader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">CONNECTING BULLETIN GRID</div>
+  </div>
+
+  <canvas class="particle-canvas"></canvas>
+  <div class="circle-glow"></div>
+
+  <!-- Header -->
+  <header></header>
+
+  <main class="container" style="min-height: 85vh;">
+    
+    <section class="animate-slide-up" style="margin-bottom:40px; text-align:center;">
+      <h1 style="font-family:var(--font-title); font-size:2.5rem; font-weight:800;">Campus Bulletins & Notices</h1>
+      <p style="color:var(--text-secondary); margin-top:5px; font-size:14px;">Official announcements, holiday schedules, and exam regulatory changes feed.</p>
+    </section>
+
+    <!-- Notices Board lists -->
+    <section class="animate-fade-in delay-2" style="max-width:850px; margin:0 auto; display:flex; flex-direction:column; gap:20px;" id="public-notices-list">
+      <!-- Loaded dynamically -->
+    </section>
+
+  </main>
+
+  <footer></footer>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPublicNotices();
+    });
+
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      if (typeof str !== 'string') return String(str);
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    async function loadPublicNotices() {
+      const list = document.getElementById('public-notices-list');
+      if (!list) return;
+      
+      let noticesToRender = [
+        { Title: 'Holiday Announcement', Description: 'The college will remain closed on July 25th, 2026, in view of local festival celebrations.', Category: 'Holiday', Date: '2026-07-15' },
+        { Title: 'Semester Exam Schedule R-2021', Description: 'The semester examination schedule for all semesters under R-2021 has been published. Exams start from August 10th.', Category: 'Exam', Date: '2026-07-17' },
+        { Title: 'Wipro Campus Drive 2026', Description: 'Wipro campus recruitment drive for final year CSE, ECE and EEE students is scheduled on August 12th. Register in the placement portal.', Category: 'Placement', Date: '2026-07-18' },
+        { Title: 'Internal Assessment Test II', Description: 'IAT II for all semesters will commence from July 28th. Portions will cover Units 3 and 4.', Category: 'Circular', Date: '2026-07-16' }
+      ];
+      
+      try {
+        const res = await fetch('/api/admin/dashboard');
+        // connection check
+      } catch (err) {
+        console.warn('Backend API connection failed, falling back to local database...');
+      }
+      
+      try {
+        const localNotices = JSON.parse(localStorage.getItem('mock_notices'));
+        if (localNotices && localNotices.length > 0) {
+          noticesToRender = localNotices;
+        }
+      } catch (e) {}
+
+      list.innerHTML = noticesToRender.map(nt => {
+        let categoryColor = 'var(--color-primary)';
+        if (nt.Category === 'Holiday') categoryColor = 'var(--color-danger)';
+        if (nt.Category === 'Placement') categoryColor = 'var(--color-secondary)';
+        if (nt.Category === 'Exam') categoryColor = 'var(--color-accent)';
+        
+        return `
+          <div class="glass-card" style="padding:25px; display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="profile-role-tag" style="background:rgba(255,255,255,0.05); color:${categoryColor}; margin:0; font-size:10px; font-weight:700;">${escapeHTML(nt.Category)}</span>
+              <span style="font-size:11px; color:var(--text-muted);"><i class="bx bx-calendar"></i> ${escapeHTML(nt.Date)}</span>
+            </div>
+            <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; color:var(--text-primary);">${escapeHTML(nt.Title)}</h3>
+            <p style="font-size:13px; color:var(--text-secondary); line-height:1.5;">${escapeHTML(nt.Description)}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

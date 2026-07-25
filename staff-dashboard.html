@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Control Dashboard | Saranathan College</title>
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+
+  <!-- Page Loader -->
+  <div class="preloader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">CONNECTING FACULTY BOARD</div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="nav-container">
+      <div class="logo-area" onclick="window.location.href='index.html'">
+        <div class="college-logo-img">S</div>
+        <span class="logo-title">Saranathan College</span>
+      </div>
+      <div class="nav-right">
+        <button class="theme-toggle" id="theme-toggle-btn" aria-label="Toggle Theme">
+          <i class="bx bx-moon" id="theme-icon"></i>
+        </button>
+        <button class="btn-login-nav" onclick="sessionStorage.clear(); window.location.href='login.html'">Logout</button>
+        <button class="menu-btn" aria-label="Toggle Sidebar">
+          <i class="bx bx-menu"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard-container">
+    
+    <!-- Left Sidebar Menu -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-profile">
+        <div class="profile-avatar-wrapper">
+          <div class="college-logo-img profile-avatar" style="width:100%; height:100%; font-size:32px; background:linear-gradient(135deg, var(--color-secondary), var(--color-accent));">T</div>
+          <span class="profile-status-dot"></span>
+        </div>
+        <h4 class="profile-name user-session-name">Faculty Name</h4>
+        <span class="profile-role-tag user-session-role" style="background:rgba(16,185,129,0.15); color:var(--color-secondary);">Staff</span>
+        <span class="user-session-detail" style="font-size:11px; color:var(--text-muted); margin-top:4px;">TCH001</span>
+      </div>
+
+      <nav style="display:flex; flex-direction:column; gap:5px; flex:1;">
+        <div class="sidebar-link active" data-tab="tab-home"><i class="bx bx-grid-alt"></i> Home Overview</div>
+        <div class="sidebar-link" data-tab="tab-approvals"><i class="bx bx-check-shield"></i> Registrations Queue</div>
+        <div class="sidebar-link" data-tab="tab-marks-upload"><i class="bx bx-cloud-upload"></i> Upload Marks</div>
+        <div class="sidebar-link" data-tab="tab-timetable"><i class="bx bx-time-five"></i> General Timetable</div>
+        <a class="sidebar-link" href="edit/timetable.html" style="text-decoration:none;"><i class="bx bx-calendar-plus"></i> Timetable Generator</a>
+        <div class="sidebar-link" data-tab="tab-directory"><i class="bx bx-folder-open"></i> Staff Directory</div>
+        
+        <div class="sidebar-link logout-btn"><i class="bx bx-log-out"></i> Sign Out</div>
+      </nav>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="dashboard-content">
+      
+      <!-- 1. HOME / OVERVIEW TAB -->
+      <div id="tab-home" class="dashboard-tab-panel active">
+        <div class="dashboard-section-header">
+          <div>
+            <h2>Faculty Overview</h2>
+            <p style="font-size:12px; color:var(--text-secondary); margin-top:3px;">Department administrative dashboard — manage courses, students, and academic activities</p>
+          </div>
+        </div>
+
+        <!-- Metric summaries -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:25px; margin-bottom:30px;">
+          <div class="glass-card metric-card">
+            <div class="metric-info">
+              <h3>Faculty Designation</h3>
+              <p style="font-size: 20px; font-weight:700;">Assistant Professor</p>
+              <span style="font-size:11px; color:var(--text-muted);">Computer Science & Engineering</span>
+            </div>
+            <div class="metric-icon-box metric-blue"><i class="bx bx-briefcase-alt-2"></i></div>
+          </div>
+          <div class="glass-card metric-card">
+            <div class="metric-info">
+              <h3>Primary Block</h3>
+              <p style="font-size: 20px; font-weight:700;">CSE Block</p>
+              <span style="font-size:11px; color:var(--text-muted);">2nd Floor, East Wing</span>
+            </div>
+            <div class="metric-icon-box metric-green"><i class="bx bx-buildings"></i></div>
+          </div>
+          <div class="glass-card metric-card">
+            <div class="metric-info">
+              <h3>Academic Office</h3>
+              <p style="font-size: 20px; font-weight:700;">Cabin A-305</p>
+              <span style="font-size:11px; color:var(--text-muted);">Near CSE Lab Complex</span>
+            </div>
+            <div class="metric-icon-box metric-purple"><i class="bx bx-map-pin"></i></div>
+          </div>
+          <div class="glass-card metric-card">
+            <div class="metric-info">
+              <h3>Courses Assigned</h3>
+              <p style="font-size: 20px; font-weight:700;">4 Subjects</p>
+              <span style="font-size:11px; color:var(--text-muted);">OS, DBMS, Compiler Design, Lab</span>
+            </div>
+            <div class="metric-icon-box metric-orange"><i class="bx bx-book"></i></div>
+          </div>
+          <div class="glass-card metric-card">
+            <div class="metric-info">
+              <h3>Students Mentored</h3>
+              <p style="font-size: 20px; font-weight:700;">120+</p>
+              <span style="font-size:11px; color:var(--text-muted);">Across 3 batches</span>
+            </div>
+            <div class="metric-icon-box metric-red"><i class="bx bx-group"></i></div>
+          </div>
+          <div class="glass-card metric-card">
+            <div class="metric-info">
+              <h3>Department</h3>
+              <p style="font-size: 20px; font-weight:700;">CSE</p>
+              <span style="font-size:11px; color:var(--text-muted);">Accredited by NBA</span>
+            </div>
+            <div class="metric-icon-box metric-teal"><i class="bx bx-chip"></i></div>
+          </div>
+        </div>
+
+        <!-- Quick Actions Row -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom:30px;">
+          <div class="glass-card" style="padding:18px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="document.querySelector('[data-tab=tab-approvals]').click()">
+            <div style="width:40px; height:40px; border-radius:10px; background:rgba(59,130,246,0.15); display:flex; align-items:center; justify-content:center;">
+              <i class="bx bx-user-check" style="font-size:22px; color:var(--color-primary);"></i>
+            </div>
+            <div>
+              <h4 style="font-size:13px; font-weight:700;">Pending Approvals</h4>
+              <p style="font-size:11px; color:var(--text-muted);">Review new registrations</p>
+            </div>
+          </div>
+          <div class="glass-card" style="padding:18px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="document.querySelector('[data-tab=tab-marks-upload]').click()">
+            <div style="width:40px; height:40px; border-radius:10px; background:rgba(16,185,129,0.15); display:flex; align-items:center; justify-content:center;">
+              <i class="bx bx-cloud-upload" style="font-size:22px; color:var(--color-secondary);"></i>
+            </div>
+            <div>
+              <h4 style="font-size:13px; font-weight:700;">Upload Marks</h4>
+              <p style="font-size:11px; color:var(--text-muted);">Internal assessment entry</p>
+            </div>
+          </div>
+          <div class="glass-card" style="padding:18px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="document.querySelector('[data-tab=tab-timetable]').click()">
+            <div style="width:40px; height:40px; border-radius:10px; background:rgba(245,158,11,0.15); display:flex; align-items:center; justify-content:center;">
+              <i class="bx bx-time-five" style="font-size:22px; color:#f59e0b;"></i>
+            </div>
+            <div>
+              <h4 style="font-size:13px; font-weight:700;">View Timetable</h4>
+              <p style="font-size:11px; color:var(--text-muted);">Weekly lecture schedule</p>
+            </div>
+          </div>
+          <div class="glass-card" style="padding:18px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="document.querySelector('[data-tab=tab-directory]').click()">
+            <div style="width:40px; height:40px; border-radius:10px; background:rgba(139,92,246,0.15); display:flex; align-items:center; justify-content:center;">
+              <i class="bx bx-folder-open" style="font-size:22px; color:var(--color-accent);"></i>
+            </div>
+            <div>
+              <h4 style="font-size:13px; font-weight:700;">Staff Directory</h4>
+              <p style="font-size:11px; color:var(--text-muted);">HODs & cabin details</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Department Info & Circulars -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:25px; margin-bottom:30px;">
+          <!-- Department Overview -->
+          <div class="glass-card" style="padding:20px;">
+            <h3 style="font-family:var(--font-title); font-size:15px; font-weight:700; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+              <i class="bx bx-buildings" style="color:var(--color-primary);"></i> Department Overview
+            </h3>
+            <div style="display:flex; flex-direction:column; gap:10px; font-size:12px; color:var(--text-secondary);">
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Department Name</span>
+                <strong style="color:var(--text-primary);">Computer Science & Engineering</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Head of Department</span>
+                <strong style="color:var(--text-primary);">Dr. R. Suresh Kumar</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Total Faculty</span>
+                <strong style="color:var(--text-primary);">18 Members</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Total Students</span>
+                <strong style="color:var(--text-primary);">480+ Enrolled</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Lab Facilities</span>
+                <strong style="color:var(--text-primary);">5 Labs (OS, DBMS, Network, AI, IoT)</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0;">
+                <span>Accreditation</span>
+                <strong style="color:var(--color-secondary);">NBA Accredited (2023-2028)</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Circulars & Notices -->
+          <div class="glass-card" style="padding:20px; border-color:var(--color-primary-glow);">
+            <h3 style="font-family:var(--font-title); font-size:15px; font-weight:700; color:var(--color-primary); margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+              <i class="bx bx-news"></i> Board Circulars & Notices
+            </h3>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:12px; font-size:12px; color:var(--text-secondary);">
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <span style="color:var(--color-primary); font-size:16px;">•</span>
+                <div>
+                  <strong style="color:var(--text-primary);">Grade Submission Deadline</strong>
+                  <p style="font-size:11px; margin-top:2px;">Final semester grade submissions close by August 5th, 2026. Ensure all internal marks are uploaded before the deadline.</p>
+                </div>
+              </li>
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <span style="color:var(--color-secondary); font-size:16px;">•</span>
+                <div>
+                  <strong style="color:var(--text-primary);">Registration Queue</strong>
+                  <p style="font-size:11px; margin-top:2px;">Check off student registrations backlog queue before enrollment closing. Pending approvals may delay student portal access.</p>
+                </div>
+              </li>
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <span style="color:#f59e0b; font-size:16px;">•</span>
+                <div>
+                  <strong style="color:var(--text-primary);">Lab Audit Checklist</strong>
+                  <p style="font-size:11px; margin-top:2px;">Maintain physical attendance registry logbooks for lab audit checks. All lab records must be signed and dated.</p>
+                </div>
+              </li>
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <span style="color:var(--color-accent); font-size:16px;">•</span>
+                <div>
+                  <strong style="color:var(--text-primary);">Faculty Meeting</strong>
+                  <p style="font-size:11px; margin-top:2px;">Monthly department meeting scheduled for every first Friday at 3:30 PM in the CSE Seminar Hall.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Courses Taught Section -->
+        <div class="glass-card" style="padding:20px;">
+          <h3 style="font-family:var(--font-title); font-size:15px; font-weight:700; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+            <i class="bx bx-book-content" style="color:var(--color-secondary);"></i> Courses Currently Assigned
+          </h3>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:15px;">
+            <div style="padding:15px; background:rgba(59,130,246,0.08); border-radius:8px; border:1px solid rgba(59,130,246,0.15);">
+              <h4 style="font-size:13px; font-weight:700; color:var(--color-primary);">Operating Systems</h4>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">CSE 3rd Year | 4 Credits | Mon/Wed 9-10 AM</p>
+              <span style="font-size:10px; color:var(--text-secondary);">Room: CSE LH1 | 65 Students</span>
+            </div>
+            <div style="padding:15px; background:rgba(16,185,129,0.08); border-radius:8px; border:1px solid rgba(16,185,129,0.15);">
+              <h4 style="font-size:13px; font-weight:700; color:var(--color-secondary);">Database Management Systems</h4>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">CSE 3rd Year | 4 Credits | Tue/Thu 9-10 AM</p>
+              <span style="font-size:10px; color:var(--text-secondary);">Room: CSE LH2 | 62 Students</span>
+            </div>
+            <div style="padding:15px; background:rgba(245,158,11,0.08); border-radius:8px; border:1px solid rgba(245,158,11,0.15);">
+              <h4 style="font-size:13px; font-weight:700; color:#f59e0b;">Compiler Design</h4>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">CSE 3rd Year | 3 Credits | Mon/Wed 1:30-2:30 PM</p>
+              <span style="font-size:10px; color:var(--text-secondary);">Room: CSE LH1 | 58 Students</span>
+            </div>
+            <div style="padding:15px; background:rgba(139,92,246,0.08); border-radius:8px; border:1px solid rgba(139,92,246,0.15);">
+              <h4 style="font-size:13px; font-weight:700; color:var(--color-accent);">OS & DBMS Lab</h4>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">CSE 3rd Year | 2 Credits | Tue/Thu 2:30-3:30 PM</p>
+              <span style="font-size:10px; color:var(--text-secondary);">Room: Lab 3 | 30 Students per batch</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. STUDENT APPROVAL QUEUE TAB -->
+      <div id="tab-approvals" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <div>
+            <h2>Student Admissions Registration Queue</h2>
+            <p style="font-size:12px; color:var(--text-secondary); margin-top:3px;">Review and approve/reject new student portals</p>
+          </div>
+        </div>
+
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Roll Number</th>
+                <th>Student Name</th>
+                <th>Department Choice</th>
+                <th>Roster Semester</th>
+                <th>Email Address</th>
+                <th>Approval Action</th>
+              </tr>
+            </thead>
+            <tbody id="approval-queue-body">
+              <!-- Dynamically filled with student list -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3. MARKS UPLOAD TAB -->
+      <div id="tab-marks-upload" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>Upload Student Scores</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">Input internal assessment marks and final exam grades directly to college database</p>
+        </div>
+
+        <div class="glass-card" style="max-width:650px;">
+          <form id="upload-marks-form" style="display:flex; flex-direction:column; gap:20px;">
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="marks-student-roll">Student Roll Number</label>
+                <input type="text" id="marks-student-roll" class="form-input" placeholder="e.g. STU001" required>
+              </div>
+              <div class="form-group">
+                <label for="marks-subject">Subject Course Title</label>
+                <input type="text" id="marks-subject" class="form-input" placeholder="e.g. Operating Systems" required>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="marks-internal">Internal Assessment Marks (out of 50)</label>
+                <input type="number" step="0.5" min="0" max="50" id="marks-internal" class="form-input" placeholder="e.g. 42.5" required>
+              </div>
+              <div class="form-group">
+                <label for="marks-grade">Semester Grade Letter</label>
+                <select id="marks-grade" class="form-input" style="background-color: var(--bg-page); cursor:pointer;">
+                  <option value="O">O (Outstanding)</option>
+                  <option value="A+">A+ (Excellent)</option>
+                  <option value="A">A (Very Good)</option>
+                  <option value="B+">B+ (Good)</option>
+                  <option value="B">B (Pass)</option>
+                  <option value="RA">RA (Re-Appearance)</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="form-submit-btn" style="width:100%; display:flex; justify-content:center; gap:8px;">
+              <i class="bx bx-cloud-upload"></i> Save to Academic Ledger
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- 4. TIMETABLE TAB -->
+      <div id="tab-timetable" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>General Lecture Timetable</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">Faculty schedules index</p>
+        </div>
+
+        <div class="timetable-grid">
+          <!-- Headers -->
+          <div class="timetable-header">Day</div>
+          <div class="timetable-header">09:00 - 10:00</div>
+          <div class="timetable-header">10:00 - 11:00</div>
+          <div class="timetable-header">11:15 - 12:15</div>
+          <div class="timetable-header">01:30 - 02:30</div>
+          <div class="timetable-header">02:30 - 03:30</div>
+          
+          <!-- Monday -->
+          <div class="timetable-cell" style="background:var(--bg-glass-active); font-weight:700;">Mon</div>
+          <div class="timetable-cell"><span class="timetable-subject">Operating Systems</span><span class="timetable-room">CSE LH1</span></div>
+          <div class="timetable-cell"><span class="timetable-subject">DBMS</span><span class="timetable-room">CSE LH2</span></div>
+          <div class="timetable-cell" style="background:rgba(255,255,255,0.02);"><span class="timetable-subject">Free Period</span></div>
+          <div class="timetable-cell"><span class="timetable-subject">Compiler Design</span><span class="timetable-room">CSE LH1</span></div>
+          <div class="timetable-cell"><span class="timetable-subject">Lab Session</span><span class="timetable-room">Lab 3</span></div>
+
+          <!-- Tuesday -->
+          <div class="timetable-cell" style="background:var(--bg-glass-active); font-weight:700;">Tue</div>
+          <div class="timetable-cell"><span class="timetable-subject">DBMS</span><span class="timetable-room">CSE LH2</span></div>
+          <div class="timetable-cell" style="background:rgba(255,255,255,0.02);"><span class="timetable-subject">Free Period</span></div>
+          <div class="timetable-cell"><span class="timetable-subject">Operating Systems</span><span class="timetable-room">CSE LH1</span></div>
+          <div class="timetable-cell"><span class="timetable-subject">Lab Session</span><span class="timetable-room">Lab 3</span></div>
+          <div class="timetable-cell"><span class="timetable-subject">Lab Session</span><span class="timetable-room">Lab 3</span></div>
+
+          <!-- Wednesday -->
+          <div class="timetable-cell" style="background:var(--bg-glass-active); font-weight:700;">Wed</div>
+          <div class="timetable-cell"><span class="timetable-subject">Compiler Design</span><span class="timetable-room">CSE LH1</span></div>
+          <div class="timetable-cell"><span class="timetable-subject">Operating Systems</span><span class="timetable-room">CSE LH1</span></div>
+          <div class="timetable-cell"><span class="timetable-subject">DBMS</span><span class="timetable-room">CSE LH2</span></div>
+          <div class="timetable-cell" style="background:rgba(255,255,255,0.02);"><span class="timetable-subject">Free Period</span></div>
+          <div class="timetable-cell"><span class="timetable-subject">Research Work</span><span class="timetable-room">Cabin A-305</span></div>
+        </div>
+      </div>
+
+      <!-- 5. STAFF DIRECTORY TAB -->
+      <div id="tab-directory" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>Staff Roster & Cabin Directory</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">Department-wise Head of Departments and office locations</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:25px;" id="staff-directory-list">
+          <!-- Injected dynamically with HODs / cabins -->
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>
+

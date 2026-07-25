@@ -1,0 +1,491 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Timetable — Labs at Last Periods</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="container">
+    <header style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+      <h1>Timetable — Labs at Last Periods</h1>
+      <button id="backBtn" class="ghost" style="padding: 10px 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background-color 0.2s;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Dashboard
+      </button>
+    </header>
+
+    <div class="card">
+      <div class="controls" style="justify-content: space-between; width: 100%;">
+        <div class="muted" style="max-width: 600px;">Labs will be scheduled at the last available periods of each day (global one-lab-per-day). Other rules unchanged.</div>
+        <div class="controls">
+          <button id="generateBtn">Generate Timetable</button>
+          <button id="exportPdfBtn" class="ghost">Export PDF</button>
+          <button id="exportJsonBtn" class="ghost">Export JSON</button>
+          <input id="importJsonFile" type="file" accept="application/json" style="display:none" />
+          <button id="importJsonBtn" class="ghost">Import JSON</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>⚙️ Settings</h3>
+      <div class="form-grid">
+        <div class="form-group"><label>Start time</label><input id="startTime" type="time" value="09:15" /></div>
+        <div class="form-group"><label>End time</label><input id="endTime" type="time" value="17:00" /></div>
+        <div class="form-group"><label>Period length (minutes)</label><input id="periodLength" type="number" min="10" value="50" /></div>
+        <div class="form-group"><label>Lunch duration (minutes)</label><input id="lunchInterval" type="number" min="0" value="45" /></div>
+        <div class="form-group"><label>Periods per day (optional)</label><input id="periodsPerDay" type="number" min="1" placeholder="e.g. 8 — leave blank to fit by time" /></div>
+      </div>
+
+      <div class="form-grid" style="margin-top:20px;">
+        <div class="form-group">
+          <label>Working days</label>
+          <div class="checkbox-group">
+            <label class="checkbox-label"><input type="checkbox" class="workDay" value="Mon" checked/> Mon</label>
+            <label class="checkbox-label"><input type="checkbox" class="workDay" value="Tue" checked/> Tue</label>
+            <label class="checkbox-label"><input type="checkbox" class="workDay" value="Wed" checked/> Wed</label>
+            <label class="checkbox-label"><input type="checkbox" class="workDay" value="Thu" checked/> Thu</label>
+            <label class="checkbox-label"><input type="checkbox" class="workDay" value="Fri" checked/> Fri</label>
+            <label class="checkbox-label"><input type="checkbox" class="workDay" value="Sat" /> Sat</label>
+            <label class="checkbox-label"><input type="checkbox" class="workDay" value="Sun" /> Sun</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <div class="muted" style="margin-top: 6px;">Provide Total hours and Lab hours for each subject. Example: Total=8 Lab=3 → Theory=5.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="card">
+        <h3>👥 Manage Staff</h3>
+        <div class="form-grid-3">
+          <div class="form-group"><label>Staff ID</label><input id="staffId" placeholder="e.g. T1" /></div>
+          <div class="form-group"><label>Staff Name</label><input id="staffName" placeholder="e.g. Arun" /></div>
+          <div class="form-group"><label>Subjects (comma-separated)</label><input id="staffSubjects" placeholder="WEB,DPCO" /></div>
+        </div>
+        <div class="form-grid-3" style="margin-top: 10px;">
+          <div class="form-group"><label>Max hours/week (optional)</label><input id="staffMax" type="number" /></div>
+          <div class="form-group"><label>Unavailable slots (e.g. Mon_P2,Tue_P4)</label><input id="staffUnavailable" placeholder="e.g. Mon_P2,Tue_P4" /></div>
+          <div class="form-group action-col">
+            <button id="addStaffBtn">Add Staff</button>
+          </div>
+        </div>
+        <div class="table-wrapper" style="margin-top: 20px;">
+          <div id="staffListArea"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📚 Manage Subjects</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Code</label><input id="subCode" placeholder="WEB" /></div>
+          <div class="form-group"><label>Name</label><input id="subName" placeholder="Web Tech" /></div>
+          <div class="form-group"><label>Total hours/week</label><input id="subHours" type="number" min="0" value="8" /></div>
+          <div class="form-group"><label>Lab hours/week</label><input id="subLabHours" type="number" min="0" value="3" /></div>
+          <div class="form-group"><label>Lab length (periods)</label><input id="subLabLen" type="number" min="1" value="2" /></div>
+        </div>
+
+        <div class="form-grid" style="margin-top: 10px;">
+          <div class="form-group"><label>Priority</label><select id="subPriority"><option value="high">High</option><option value="normal" selected>Normal</option><option value="low">Low</option></select></div>
+          <div class="form-group"><label>Assign staff</label><select id="subStaff"><option value="">-- none --</option></select></div>
+          <div class="form-group action-col"><button id="addSubBtn">Add Subject</button></div>
+        </div>
+
+        <div style="margin-top: 15px;" class="controls">
+          <button id="loadSampleBtn" class="ghost">Load Sample</button>
+          <button id="saveBtn" class="ghost">Save Locally</button>
+        </div>
+        <div class="table-wrapper" style="margin-top: 20px;">
+          <div id="subjectListArea"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="tableCard">
+      <h3>📅 Generated Timetable</h3>
+      <div class="table-wrapper">
+        <div id="tableContainer"></div>
+      </div>
+      <div id="msg"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <script>
+  // ---------- State & sample ----------
+  const LS_KEY = 'tt_labs_last_periods_v1';
+  let state = {
+    settings: { startTime:'09:15', endTime:'17:00', periodLength:50, lunchInterval:45, workingDays:['Mon','Tue','Wed','Thu','Fri'] },
+    staff: [
+      { id:'T1', name:'Arun', subjects:['WEB','DPCO'], maxHours:null, unavailable:'' },
+      { id:'T2', name:'Kavya', subjects:['FDS'], maxHours:null, unavailable:'' },
+      { id:'T3', name:'Ravi', subjects:['DS'], maxHours:null, unavailable:'' },
+      { id:'T4', name:'ANU', subjects:['DPCO'], maxHours:null, unavailable:'' },
+      { id:'T5', name:'SINDHU', subjects:['OOPS'], maxHours:null, unavailable:'' }
+    ],
+    subjects: [
+      { code:'WEB', name:'Web Tech', hours:8, labHours:3, labLen:2, priority:'normal', staffId:'T1' },
+      { code:'DPCO', name:'DPCO', hours:8, labHours:3, labLen:2, priority:'normal', staffId:'T4' },
+      { code:'FDS', name:'FDS', hours:8, labHours:3, labLen:1, priority:'normal', staffId:'T2' },
+      { code:'DS', name:'Data Structures', hours:8, labHours:3, labLen:2, priority:'normal', staffId:'T3' },
+      { code:'OOPS', name:'OOPs', hours:8, labHours:3, labLen:2, priority:'normal', staffId:'T5' }
+    ]
+  };
+
+  // ---------- Helpers ----------
+  function $(id){ return document.getElementById(id); }
+  function setMsg(txt,color='#64748b'){
+    const m=$('msg');
+    if(!txt){
+      m.style.display = 'none';
+      return;
+    }
+    m.style.display = 'inline-block';
+    m.innerText = txt;
+    m.className = ''; // Reset classes
+    if(color === '#166534') {
+      m.classList.add('msg-success');
+    } else if(color === '#b91c1c') {
+      m.classList.add('msg-error');
+    } else {
+      m.classList.add('msg-info');
+    }
+  }
+  function timeToMinutes(t){ if(!t) return 0; const [h,m]=t.split(':').map(Number); return h*60+m; }
+  function minutesToTime(m){ m=Math.round(m); const hh=String(Math.floor(m/60)).padStart(2,'0'); const mm=String(m%60).padStart(2,'0'); return hh+':'+mm; }
+
+  // ---------- Normalize: theory = total - lab ----------
+  function normalizeSubjectHours(subject){
+    const total = Number(subject.hours || subject.totalHours || 0);
+    let lab = Number(subject.labHours || 0);
+    if(lab > total){ lab = total; }
+    let theory = total - lab;
+    subject.totalHours = total;
+    subject.labHours = lab;
+    subject.theoryHours = theory;
+    subject.labLen = Math.max(1, Number(subject.labLen || 1));
+    return subject;
+  }
+  function normalizeAllSubjects(){ (state.subjects||[]).forEach(s=>normalizeSubjectHours(s)); }
+
+  // ---------- Load / Save ----------
+  function loadState(){
+    try{ const raw=localStorage.getItem(LS_KEY); if(raw) state = JSON.parse(raw); } catch(e){ console.warn(e); }
+    const s = state.settings;
+    $('startTime').value = s.startTime || '09:15';
+    $('endTime').value = s.endTime || '17:00';
+    $('periodLength').value = s.periodLength || 50;
+    $('lunchInterval').value = s.lunchInterval || 45;
+    document.querySelectorAll('.workDay').forEach(cb=>cb.checked = (s.workingDays||[]).includes(cb.value));
+    renderStaffList(); renderSubjectList(); populateStaffSelect();
+    normalizeAllSubjects();
+    setMsg('Loaded configuration (sample provided).','#166534');
+  }
+  function saveState(show=true){
+    state.settings.startTime = $('startTime').value;
+    state.settings.endTime = $('endTime').value;
+    state.settings.periodLength = Number($('periodLength').value) || 50;
+    state.settings.lunchInterval = Number($('lunchInterval').value) || 0;
+    const days = Array.from(document.querySelectorAll('.workDay')).filter(c=>c.checked).map(c=>c.value);
+    state.settings.workingDays = days;
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); if(show) setMsg('Saved locally ✔','#166534'); } catch(e){ setMsg('Save failed: '+e.message,'#b91c1c'); }
+  }
+
+  // ---------- UI: staff/subjects ----------
+  function renderStaffList(){
+    const el=$('staffListArea');
+    if(!state.staff || state.staff.length===0){ el.innerHTML='<div class="muted">No staff</div>'; return; }
+    let html='<table><thead><tr><th>ID</th><th>Name</th><th>Subjects</th><th>Max/wk</th><th>Unavailable</th><th></th></tr></thead><tbody>';
+    state.staff.forEach(s=>{ html+=`<tr><td>${s.id}</td><td>${s.name}</td><td>${(s.subjects||[]).join(', ')||'—'}</td><td>${s.maxHours||'∞'}</td><td>${s.unavailable||'—'}</td><td><button data-id="${s.id}" class="editStaffBtn"><i class="bx bx-edit-alt"></i> Edit</button> <button data-id="${s.id}" class="delStaffBtn"><i class="bx bx-trash"></i> Delete</button></td></tr>`; });
+    html+='</tbody></table>'; el.innerHTML=html;
+    el.querySelectorAll('.delStaffBtn').forEach(b=>b.addEventListener('click',e=>{ const id=e.currentTarget.dataset.id; if(!confirm('Delete staff '+id+' ?')) return; state.staff=state.staff.filter(x=>x.id!==id); state.subjects=state.subjects.map(sub=>sub.staffId===id?{...sub,staffId:''}:sub); renderStaffList(); renderSubjectList(); populateStaffSelect(); saveState(); }));
+    el.querySelectorAll('.editStaffBtn').forEach(b=>b.addEventListener('click',e=>{ const id=e.currentTarget.dataset.id; const s=state.staff.find(x=>x.id===id); if(!s) return; $('staffId').value=s.id; $('staffName').value=s.name; $('staffSubjects').value=(s.subjects||[]).join(','); $('staffMax').value=s.maxHours||''; $('staffUnavailable').value=s.unavailable||''; setMsg('Loaded staff for edit'); }));
+  }
+  function renderSubjectList(){
+    const el=$('subjectListArea');
+    if(!state.subjects || state.subjects.length===0){ el.innerHTML='<div class="muted">No subjects</div>'; return; }
+    let html='<table><thead><tr><th>Code</th><th>Name</th><th>Total</th><th>Lab</th><th>LabLen</th><th>Staff</th><th></th></tr></thead><tbody>';
+    state.subjects.forEach(s=>{ const st=state.staff.find(x=>x.id===s.staffId); html+=`<tr><td>${s.code}</td><td>${s.name}</td><td>${s.totalHours||s.hours||0}</td><td>${s.labHours||0}</td><td>${s.labLen||1}</td><td>${st?st.name+' ('+st.id+')':'—'}</td><td><button data-code="${s.code}" class="editSubBtn"><i class="bx bx-edit-alt"></i> Edit</button> <button data-code="${s.code}" class="delSubBtn"><i class="bx bx-trash"></i> Delete</button></td></tr>`; });
+    html+='</tbody></table>'; el.innerHTML=html;
+    el.querySelectorAll('.delSubBtn').forEach(b=>b.addEventListener('click',e=>{ const code=e.currentTarget.dataset.code; if(!confirm('Delete subject '+code+' ?')) return; state.subjects=state.subjects.filter(x=>x.code!==code); renderSubjectList(); saveState(); }));
+    el.querySelectorAll('.editSubBtn').forEach(b=>b.addEventListener('click',e=>{ const code=e.currentTarget.dataset.code; const s=state.subjects.find(x=>x.code===code); if(!s) return; $('subCode').value=s.code; $('subName').value=s.name; $('subHours').value=s.hours||s.totalHours||0; $('subLabHours').value=s.labHours||0; $('subLabLen').value=s.labLen||1; $('subPriority').value=s.priority||'normal'; $('subStaff').value=s.staffId||''; setMsg('Loaded subject for edit'); }));
+  }
+  function populateStaffSelect(){ const sel=$('subStaff'); sel.innerHTML='<option value="">-- none --</option>'; (state.staff||[]).forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.innerText=`${s.name} (${s.id})`; sel.appendChild(o); }); }
+
+  // ---------- Add handlers ----------
+  $('addStaffBtn').addEventListener('click',()=>{ const id=$('staffId').value.trim(); const name=$('staffName').value.trim(); const subs=$('staffSubjects').value.split(',').map(x=>x.trim().toUpperCase()).filter(Boolean); const maxRaw=$('staffMax').value.trim(); const max=maxRaw===''?null:Number(maxRaw); const unavailable=$('staffUnavailable').value.trim(); if(!id||!name){ setMsg('Staff ID and Name required','#b91c1c'); return; } const exists=state.staff.find(s=>s.id===id); if(exists){ exists.name=name; exists.subjects=subs; exists.maxHours=max; exists.unavailable=unavailable; setMsg('Staff updated','#166534'); } else { if(state.staff.some(s=>s.id===id)){ setMsg('Duplicate staff ID','#b91c1c'); return; } state.staff.push({id,name,subjects:subs,maxHours:max,unavailable}); setMsg('Staff added','#166534'); } $('staffId').value=''; $('staffName').value=''; $('staffSubjects').value=''; $('staffMax').value=''; $('staffUnavailable').value=''; renderStaffList(); populateStaffSelect(); saveState(); });
+
+  $('addSubBtn').addEventListener('click',()=>{ const code=$('subCode').value.trim().toUpperCase(); const name=$('subName').value.trim(); const hours=Number($('subHours').value)||0; const labHours=Number($('subLabHours').value)||0; const labLen=Number($('subLabLen').value)||1; const priority=$('subPriority').value||'normal'; const staffId=$('subStaff').value||''; if(!code||!name||hours<=0){ setMsg('Subject code, name and total hours required','#b91c1c'); return; } const exists=state.subjects.find(s=>s.code===code); if(exists){ exists.name=name; exists.hours=hours; exists.labHours=labHours; exists.labLen=labLen; exists.priority=priority; exists.staffId=staffId; normalizeSubjectHours(exists); setMsg('Subject updated','#166534'); } else { if(state.subjects.some(s=>s.code===code)){ setMsg('Duplicate subject code','#b91c1c'); return; } const obj={code,name,hours,labHours,labLen,priority,staffId}; normalizeSubjectHours(obj); state.subjects.push(obj); setMsg('Subject added','#166534'); } $('subCode').value=''; $('subName').value=''; $('subHours').value=''; $('subLabHours').value=''; $('subLabLen').value=2; $('subPriority').value='normal'; $('subStaff').value=''; renderSubjectList(); saveState(); });
+
+  $('loadSampleBtn').addEventListener('click',()=>{ state={ settings:{startTime:'09:15',endTime:'17:00',periodLength:50,lunchInterval:45,workingDays:['Mon','Tue','Wed','Thu','Fri']}, staff:[ { id:'T1', name:'Arun', subjects:['WEB','DPCO'], maxHours:null, unavailable:'' }, { id:'T2', name:'Kavya', subjects:['FDS'], maxHours:null, unavailable:'' }, { id:'T3', name:'Ravi', subjects:['DS'], maxHours:null, unavailable:'' }, { id:'T4', name:'ANU', subjects:['DPCO'], maxHours:null, unavailable:'' }, { id:'T5', name:'SINDHU', subjects:['OOPS'], maxHours:null, unavailable:'' } ], subjects:[ { code:'WEB', name:'Web Tech', hours:8, labHours:3, labLen:2, priority:'normal', staffId:'T1' }, { code:'DPCO', name:'DPCO', hours:8, labHours:3, labLen:2, priority:'normal', staffId:'T4' }, { code:'FDS', name:'FDS', hours:8, labHours:3, labLen:1, priority:'normal', staffId:'T2' }, { code:'DS', name:'Data Structures', hours:8, labHours:3, labLen:2, priority:'normal', staffId:'T3' }, { code:'OOPS', name:'OOPs', hours:8, labHours:3, labLen:2, priority:'normal', staffId:'T5' } ] }; loadState(); generateAndRender(); });
+
+  $('exportJsonBtn').addEventListener('click',()=>{ saveState(false); const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='timetable.json'; a.click(); URL.revokeObjectURL(url); });
+  $('importJsonBtn').addEventListener('click',()=>$('importJsonFile').click());
+  $('importJsonFile').addEventListener('change', e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{ try{ const parsed=JSON.parse(ev.target.result); if(!parsed.settings) throw new Error('Invalid file'); state=parsed; loadState(); setMsg('Imported configuration','#166534'); }catch(err){ setMsg('Import failed: '+err.message,'#b91c1c'); } }; r.readAsText(f); e.target.value=''; });
+
+  // ---------- Slot builder ----------
+  function buildPerDaySlots(settings, periodsPerDayOpt){
+    const start=timeToMinutes(settings.startTime); const end=timeToMinutes(settings.endTime); const periodLen=Number(settings.periodLength)||45; const lunchDur=Number(settings.lunchInterval)||0;
+    const slots=[]; let current=start; let idx=1;
+    while(true){
+      if(periodsPerDayOpt && idx>periodsPerDayOpt) break;
+      if(current + periodLen > end) break;
+      slots.push({ index: idx, start: current, end: current + periodLen });
+      current += periodLen;
+      let b = 0;
+      if(idx === 2) b = 10;
+      else if(idx === 4) b = lunchDur;
+      else if(idx === 6) b = 10;
+      current += b;
+      idx++;
+      if(idx>20) break;
+    }
+    return slots;
+  }
+  function expandToAllDays(perDaySlots, days){ const all=[]; days.forEach(day=>perDaySlots.forEach(s=>all.push({ day, index:s.index, start:s.start, end:s.end }))); return all; }
+
+  // ---------- Utility ----------
+  function staffUnavailableFor(staffId, day, idx){
+    if(!staffId) return false; const staff = state.staff.find(s=>s.id===staffId); if(!staff || !staff.unavailable) return false;
+    const items = staff.unavailable.split(',').map(x=>x.trim()).filter(Boolean);
+    return items.some(it=>{ const norm = it.replace(/\s+/g,'').toLowerCase(); if(norm === `${day}_p${idx}`.toLowerCase()) return true; if(norm === `${day}_${idx}`.toLowerCase()) return true; return false; });
+  }
+
+  // ---------- Scheduler: GLOBAL one lab per day, labs placed at day's end ----------
+  function schedule(allSlots, subjects){
+    subjects.forEach(s=>normalizeSubjectHours(s));
+    const remTotal = {}; const remLab = {};
+    subjects.forEach(s=>{ remTotal[s.code]=Number(s.totalHours||0); remLab[s.code]=Number(s.labHours||0); });
+    const slotLookup = {}; allSlots.forEach(s=>slotLookup[`${s.day}_${s.index}`]=s);
+    const teacherTime={}; const teacherCount={};
+    function teacherFreeForBlock(staffId, day, startIdx, length){
+      if(!staffId) return true; const staff = state.staff.find(st=>st.id===staffId); if(!staff) return false; const max=Number(staff.maxHours)||Infinity; if((teacherCount[staffId]||0)+length>max) return false;
+      for(let off=0; off<length; off++){ const idx=startIdx+off; const slot=slotLookup[`${day}_${idx}`]; if(!slot) return false; if(staffUnavailableFor(staffId, day, idx)) return false; const tk=`${day}_${slot.start}_${slot.end}`; if((teacherTime[staffId]||new Set()).has(tk)) return false; }
+      return true;
+    }
+    function markTeacherBlock(staffId, day, startIdx, length){
+      if(!staffId) return; teacherTime[staffId]=teacherTime[staffId]||new Set(); teacherCount[staffId]=teacherCount[staffId]||0;
+      for(let off=0; off<length; off++){ const idx=startIdx+off; const slot=slotLookup[`${day}_${idx}`]; if(!slot) continue; const tk=`${day}_${slot.start}_${slot.end}`; teacherTime[staffId].add(tk); teacherCount[staffId]++; }
+    }
+
+    const dayHasLab = {}; // global day flag
+    const assignments = {}; // key day_idx -> { code, isLab, labLen (if starter) }
+
+    // We want labs at day's end — so we'll iterate days and for each day iterate slot indices descending
+    const daysOrder = state.settings.workingDays||[];
+    // prepare per-day index lists
+    const perDayIndexList = {};
+    for(const d of daysOrder){
+      perDayIndexList[d] = allSlots.filter(s=>s.day===d).map(s=>s.index).sort((a,b)=>a-b);
+    }
+
+    // PASS 1: for each day, try to place exactly one lab (global rule) — scan indices from last to first
+    for(const day of daysOrder){
+      // skip if no slots
+      const indices = perDayIndexList[day] || [];
+      if(indices.length === 0) continue;
+      // if already placed a lab on that day, continue
+      if(dayHasLab[day]) continue;
+
+      // Build candidate list for this day (subjects with remLab>0)
+      const labCandidates = subjects.filter(s => (remLab[s.code]||0) > 0);
+      if(labCandidates.length === 0) continue;
+
+      // For lab placement at day's end, we try larger indices first and prefer to fit full labLen blocks
+      let placed = false;
+      for(let i = indices.length - 1; i >= 0 && !placed; i--){
+        const startIdx = indices[i];
+        // For each candidate subject, check if we can place a lab ending at or before this index such that block occupies last slots
+        // We'll try to place block starting at startIdx - (L-1) ... startIdx, but ensure block fully within day and unassigned
+        for(const s of labCandidates){
+          const desiredLen = s.labLen || 1;
+          // decide blockLen: prefer full desiredLen, allow shorter only if remaining < desiredLen (but still try full first)
+          const remainingLab = remLab[s.code] || 0;
+          const blockLenOptions = [];
+          if(remainingLab >= desiredLen) blockLenOptions.push(desiredLen);
+          else if(remainingLab > 0) blockLenOptions.push(remainingLab); // allow shorter final block
+          // also try smaller blocks down to 1 (but prefers larger)
+          for(let alt = Math.min(desiredLen-1, remainingLab); alt >= 1; alt--) if(!blockLenOptions.includes(alt)) blockLenOptions.push(alt);
+
+          for(const blockLen of blockLenOptions){
+            // compute start position so block ends at startIdx: startPos = startIdx - (blockLen - 1)
+            const startPos = startIdx - (blockLen - 1);
+            if(startPos < Math.min(...indices)) continue; // spills before earliest period
+            // ensure all slots startPos .. startPos+blockLen-1 exist and free
+            let ok=true;
+            for(let off=0; off<blockLen; off++){
+              const k = `${day}_${startPos+off}`;
+              if(!slotLookup[k] || assignments[k]) { ok=false; break; }
+            }
+            if(!ok) continue;
+            // teacher availability
+            if(!teacherFreeForBlock(s.staffId, day, startPos, blockLen)) continue;
+            // place block
+            for(let off=0; off<blockLen; off++){
+              const k = `${day}_${startPos+off}`;
+              assignments[k] = { code: s.code, isLab: true, starter: off===0 && (startPos+off===startPos), labLen: blockLen };
+            }
+            remLab[s.code] -= blockLen;
+            remTotal[s.code] -= blockLen;
+            markTeacherBlock(s.staffId, day, startPos, blockLen);
+            dayHasLab[day] = true;
+            placed = true;
+            break;
+          }
+          if(placed) break;
+        } // end candidates loop
+      } // end index loop
+    } // end day loop
+
+    // PASS 2: place theory (single period) scanning days forward and indices ascending
+    const orderedSlots = allSlots.slice().sort((a,b)=>{ const da = daysOrder.indexOf(a.day), db = daysOrder.indexOf(b.day); if(da===db) return a.index - b.index; return da - db; });
+    for(const slot of orderedSlots){
+      const key = `${slot.day}_${slot.index}`; if(assignments[key]) continue;
+      const candidates = subjects.filter(s => (remTotal[s.code]||0) > 0);
+      if(candidates.length === 0) break;
+      let best = null, bestScore = -Infinity;
+      for(const s of candidates){
+        if(!teacherFreeForBlock(s.staffId, slot.day, slot.index, 1)) continue;
+        let score = (remTotal[s.code]||0)*10 + (s.priority==='high'?5:0);
+        const prevKey = `${slot.day}_${slot.index-1}`; if(assignments[prevKey] && assignments[prevKey].code === s.code) score -= 5;
+        if(score > bestScore){ bestScore = score; best = s; }
+      }
+      if(!best) continue;
+      assignments[key] = { code: best.code, isLab: false };
+      remTotal[best.code] -= 1;
+      markTeacherBlock(best.staffId, slot.day, slot.index, 1);
+    }
+
+    return { assignments, remTotal, remLab, teacherCount };
+  }
+
+  // ---------- Render table with rowspan for labs ----------
+  function renderTable(allSlots, assignments){
+    const days = [...new Set(allSlots.map(s=>s.day))];
+    const container = $('tableContainer'); container.innerHTML = '';
+    if(days.length===0){ container.innerHTML='<div class="muted">No working days selected.</div>'; return; }
+
+    const slotMap={}; let maxIdx=0;
+    allSlots.forEach(s=>{ slotMap[s.day]=slotMap[s.day]||{}; slotMap[s.day][s.index]={start:s.start,end:s.end}; if(s.index>maxIdx) maxIdx=s.index; });
+
+    const consumed = {};
+    const teacherTime = {};
+    Object.keys(assignments).forEach(k=>{
+      const [day, idxStr] = k.split('_'); const idx = Number(idxStr);
+      const slot = slotMap[day] && slotMap[day][idx]; if(!slot) return;
+      const code = assignments[k] && assignments[k].code; const sub = state.subjects.find(s=>s.code===code); if(!sub) return;
+      const staffId = sub.staffId || '';
+      const tkey = `${day}_${slot.start}_${slot.end}`; teacherTime[tkey]=teacherTime[tkey]||[]; if(staffId) teacherTime[tkey].push({staffId, key:k});
+    });
+
+    const tbl=document.createElement('table');
+    const thead=document.createElement('thead'); const hrow=document.createElement('tr');
+    const th0=document.createElement('th'); th0.innerText='Period / Time'; hrow.appendChild(th0);
+    days.forEach(d=>{ const th=document.createElement('th'); th.innerText=d; hrow.appendChild(th); });
+    thead.appendChild(hrow); tbl.appendChild(thead);
+    const tbody=document.createElement('tbody');
+
+    for(let idx=1; idx<=maxIdx; idx++){
+      const tr=document.createElement('tr');
+      let timeLabel='';
+      for(const d of days){ if(slotMap[d] && slotMap[d][idx]){ timeLabel=`${minutesToTime(slotMap[d][idx].start)} - ${minutesToTime(slotMap[d][idx].end)}`; break; } }
+      const td0=document.createElement('td'); td0.className='period-cell'; td0.innerHTML=`P${idx}<div style="font-size:12px;color:#64748b">${timeLabel}</div>`; tr.appendChild(td0);
+
+      for(const day of days){
+        const cellKey=`${day}_${idx}`;
+        if(consumed[cellKey]) continue;
+        const slot = slotMap[day] && slotMap[day][idx];
+        if(!slot){ const td=document.createElement('td'); td.innerHTML='<div style="color:#cbd5e1">—</div>'; tr.appendChild(td); continue; }
+        const asg = assignments[cellKey];
+        if(!asg){ const td=document.createElement('td'); td.innerHTML='<div style="color:#94a3b8">[Unassigned]</div>'; tr.appendChild(td); continue; }
+
+        if(asg.isLab){
+          const subj = state.subjects.find(s=>s.code===asg.code);
+          // determine L: if starter stored labLen, use it; else use subj.labLen; else 1
+          const L = (asg.starter && asg.labLen) ? asg.labLen : (subj ? subj.labLen||1 : 1);
+          const td=document.createElement('td'); td.rowSpan = L;
+          td.innerHTML = `<div class="subject-cell">${subj?subj.name+'<br/>('+subj.code+')':asg.code}<span class="lab-badge">LAB (${L})</span></div>${subj && subj.staffId?`<div class="cont">${(state.staff.find(x=>x.id===subj.staffId)||{name:subj.staffId}).name} (${subj.staffId})</div>` : ''}`;
+          const tkey=`${day}_${slot.start}_${slot.end}`; const arr = teacherTime[tkey]||[]; if(subj && subj.staffId && arr.filter(x=>x.staffId===subj.staffId).length>1) td.classList.add('clash');
+          tr.appendChild(td);
+          for(let off=1; off<L; off++){ consumed[`${day}_${idx+off}`]=true; }
+        } else {
+          const td=document.createElement('td'); const subjectObj = state.subjects.find(s=>s.code===asg.code);
+          td.innerHTML = `<div class="subject-cell">${subjectObj?subjectObj.name+'<br/>('+subjectObj.code+')':asg.code}</div>${subjectObj && subjectObj.staffId?`<div class="cont">${(state.staff.find(x=>x.id===subjectObj.staffId)||{name:subjectObj.staffId}).name} (${subjectObj.staffId})</div>`: ''}`;
+          const tkey=`${day}_${slot.start}_${slot.end}`; const arr = teacherTime[tkey]||[]; if(subjectObj && subjectObj.staffId && arr.filter(x=>x.staffId===subjectObj.staffId).length>1) td.classList.add('clash');
+          tr.appendChild(td);
+        }
+      }
+
+      tbody.appendChild(tr);
+    }
+
+    tbl.appendChild(tbody);
+    container.appendChild(tbl);
+  }
+
+  // ---------- Main generate ----------
+  function generateAndRender(){
+    saveState(false);
+    const s=state.settings;
+    const perDayRaw = $('periodsPerDay').value.trim();
+    const perDayVal = perDayRaw === '' ? null : Number(perDayRaw);
+    normalizeAllSubjects();
+    const perDaySlots = buildPerDaySlots(s, perDayVal);
+    const allSlots = expandToAllDays(perDaySlots, s.workingDays || []);
+    if(allSlots.length===0){ setMsg('No periods could be scheduled with current settings.','#b91c1c'); $('tableContainer').innerHTML='<div class="muted">No periods could be scheduled.</div>'; return; }
+    const { assignments, remTotal, remLab, teacherCount } = schedule(allSlots, state.subjects);
+    renderTable(allSlots, assignments);
+
+    const uns = Object.entries(remTotal).filter(([c,v])=>v>0);
+    if(uns.length>0) setMsg('Unscheduled hours: '+uns.map(x=>x.join(': ')).join(', '),'#b91c1c'); else setMsg('Timetable generated successfully.','#166534');
+
+    const overloaded = (state.staff||[]).filter(st => st.maxHours && (teacherCount[st.id]||0) > st.maxHours);
+    if(overloaded.length>0){ setMsg('Warning: teacher max-hours exceeded for: ' + overloaded.map(x=>x.name+' ('+x.id+')').join(', '),'#b91c1c'); }
+  }
+
+  // ---------- PDF / JSON ----------
+  $('exportPdfBtn').addEventListener('click', ()=>{
+    const container=document.createElement('div'); container.style.padding='12px'; container.appendChild(document.createElement('h2')).innerText='Timetable';
+    const copy=$('tableContainer').cloneNode(true); container.appendChild(copy);
+    const opt={ margin:10, filename:'timetable_table.pdf', image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'mm',format:'a4',orientation:'landscape'} };
+    html2pdf().from(container).set(opt).save();
+  });
+  $('exportJsonBtn').addEventListener('click',()=>{ saveState(false); const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='timetable.json'; a.click(); URL.revokeObjectURL(url); });
+  $('importJsonBtn').addEventListener('click',()=>$('importJsonFile').click());
+
+  // ---------- wire UI ----------
+  $('generateBtn').addEventListener('click', generateAndRender);
+  $('saveBtn').addEventListener('click', ()=> saveState(true));
+
+  // ---------- back button ----------
+  $('backBtn')?.addEventListener('click', () => {
+    try {
+      const userJson = sessionStorage.getItem('portalUser');
+      if (userJson) {
+        const user = JSON.parse(userJson);
+        if (user.role === 'admin') {
+          window.location.href = '../admin-dashboard.html';
+          return;
+        } else if (user.role === 'staff') {
+          window.location.href = '../staff-dashboard.html';
+          return;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    // Fallback if no session
+    window.location.href = '../index.html';
+  });
+
+  // ---------- init ----------
+  window.addEventListener('load', ()=>{ loadState(); generateAndRender(); });
+  </script>
+</body>
+</html>

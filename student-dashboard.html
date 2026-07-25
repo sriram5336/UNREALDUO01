@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Portal Dashboard | Saranathan College</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+
+  <div class="preloader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">OPENING ACADEMIC DESK</div>
+  </div>
+
+  <header>
+    <div class="nav-container">
+      <div class="logo-area" onclick="window.location.href='index.html'">
+        <div class="college-logo-img">S</div>
+        <span class="logo-title">Saranathan College</span>
+      </div>
+      <div class="nav-right">
+        <button class="theme-toggle" id="theme-toggle-btn" aria-label="Toggle Theme">
+          <i class="bx bx-moon" id="theme-icon"></i>
+        </button>
+        <button class="btn-login-nav" onclick="sessionStorage.clear(); window.location.href='login.html'">Logout</button>
+        <button class="menu-btn" aria-label="Toggle Sidebar">
+          <i class="bx bx-menu"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard-container">
+
+    <!-- Left Sidebar Menu -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-profile">
+        <div class="profile-avatar-wrapper">
+          <div class="college-logo-img profile-avatar" style="width:100%; height:100%; font-size:32px;">S</div>
+          <span class="profile-status-dot"></span>
+        </div>
+        <h4 class="profile-name user-session-name">Student Name</h4>
+        <span class="profile-role-tag user-session-role">Student</span>
+        <span class="user-session-detail" style="font-size:11px; color:var(--text-muted); margin-top:4px;">STU001</span>
+      </div>
+
+      <nav style="display:flex; flex-direction:column; gap:5px; flex:1;">
+        <div class="sidebar-link active" data-tab="tab-home"><i class="bx bx-grid-alt"></i> Home Overview</div>
+        <div class="sidebar-link" data-tab="tab-attendance"><i class="bx bx-doughnut-chart"></i> Attendance</div>
+        <div class="sidebar-link" data-tab="tab-marks"><i class="bx bx-edit"></i> Marks &amp; GPA</div>
+        <div class="sidebar-link" data-tab="tab-timetable"><i class="bx bx-time"></i> Class Timetable</div>
+        <div class="sidebar-link" data-tab="tab-hostel-bus"><i class="bx bx-hotel"></i> Hostel &amp; Transport</div>
+        <div class="sidebar-link" data-tab="tab-resources"><i class="bx bx-book-content"></i> Curriculum Docs</div>
+        <div class="sidebar-link" data-tab="tab-library"><i class="bx bx-book-open"></i> Library Shelf</div>
+        <div class="sidebar-link" data-tab="tab-notices"><i class="bx bx-bell"></i> Notice Board</div>
+        <div class="sidebar-link" data-tab="tab-placements"><i class="bx bx-briefcase"></i> Placements &amp; Career</div>
+        <div class="sidebar-link" data-tab="tab-chatbot"><i class="bx bx-bot"></i> AI Gemini Assistant</div>
+        <div class="sidebar-link" data-tab="tab-settings"><i class="bx bx-cog"></i> Settings</div>
+        <div class="sidebar-link logout-btn"><i class="bx bx-log-out"></i> Sign Out</div>
+      </nav>
+    </aside>
+
+    <main class="dashboard-content">
+
+      <!-- Fee Warning Banner -->
+      <div class="fee-warning-banner" id="fee-warning-banner" style="display:none;">
+        <div class="fee-warning-title">
+          <i class="bx bx-error-alt" style="font-size:24px;"></i>
+          <div>
+            <strong>URGENT: Outstanding Dues Warning</strong>
+            <p style="font-size:12px; margin-top:2px; font-weight:normal;">Your account has pending tuition/mess fees of &#8377;<span id="warning-fee-amount">0</span>.</p>
+          </div>
+        </div>
+        <button class="fee-warning-btn" id="pay-warning-btn">Pay Now</button>
+      </div>
+
+      <!-- ====================================================
+           1. HOME / OVERVIEW TAB
+      ===================================================== -->
+      <div id="tab-home" class="dashboard-tab-panel active">
+        <div class="dashboard-section-header">
+          <div>
+            <h2>Dashboard Overview</h2>
+            <p style="font-size:12px; color:var(--text-secondary); margin-top:3px;">Academic year tracking index — Semester 5 | AY 2026-27</p>
+          </div>
+          <div class="batch-filter-container">
+            <span>Filter Batch:</span>
+            <select class="batch-select" id="dashboard-batch-filter">
+              <option value="2024-2028">2024-2028</option>
+              <option value="2025-2029">2025-2029</option>
+              <option value="2026-2030">2026-2030</option>
+              <option value="2022-2026">2022-2026</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:20px; margin-bottom:28px;">
+          <div class="glass-card metric-card">
+            <div class="metric-info"><h3>Roll Number</h3><p id="overview-roll">STU001</p></div>
+            <div class="metric-icon-box metric-blue"><i class="bx bx-id-card"></i></div>
+          </div>
+          <div class="glass-card metric-card">
+            <div class="metric-info"><h3>Cumulative GPA</h3><p id="overview-cgpa">8.75</p></div>
+            <div class="metric-icon-box metric-green"><i class="bx bx-trending-up"></i></div>
+          </div>
+          <div class="glass-card metric-card">
+            <div class="metric-info"><h3>Academic Semester</h3><p id="overview-semester">Semester 5</p></div>
+            <div class="metric-icon-box metric-purple"><i class="bx bx-calendar"></i></div>
+          </div>
+          <div class="glass-card metric-card">
+            <div class="metric-info"><h3>Portal Status</h3><p style="color:var(--color-secondary); font-size:16px;">Active</p></div>
+            <div class="metric-icon-box" style="background:rgba(16,185,129,0.1)"><i class="bx bx-check-shield" style="color:var(--color-secondary);"></i></div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:2fr 1fr; gap:25px; margin-bottom:28px;">
+          <!-- Student Info -->
+          <div class="glass-card" style="display:flex; flex-direction:column; gap:15px;">
+            <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; border-bottom:1px solid var(--border-glass); padding-bottom:8px;">Student Academic Profile</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; font-size:13px;">
+              <div><p style="color:var(--text-muted); font-size:11px;">Full Name</p><p id="overview-name" style="font-weight:600; color:var(--text-primary);">Arun Kumar S</p></div>
+              <div><p style="color:var(--text-muted); font-size:11px;">Department</p><p id="overview-dept" style="font-weight:600; color:var(--text-primary);">Computer Science &amp; Engineering</p></div>
+              <div><p style="color:var(--text-muted); font-size:11px;">Batch</p><p id="overview-batch" style="font-weight:600; color:var(--text-primary);">2024-2028</p></div>
+              <div><p style="color:var(--text-muted); font-size:11px;">Email</p><p id="overview-email" style="font-weight:600; color:var(--color-primary); font-size:12px;">arun@saranathan.ac.in</p></div>
+              <div><p style="color:var(--text-muted); font-size:11px;">Mobile</p><p id="overview-mobile" style="font-weight:600; color:var(--text-primary);">+91 98765 43210</p></div>
+              <div><p style="color:var(--text-muted); font-size:11px;">Campus Access</p><p style="font-weight:600; color:var(--color-secondary);"><i class="bx bx-check-circle"></i> Active &amp; Verified</p></div>
+              <div><p style="color:var(--text-muted); font-size:11px;">Regulation</p><p style="font-weight:600; color:var(--text-primary);">R-2021</p></div>
+              <div><p style="color:var(--text-muted); font-size:11px;">Hostel Block</p><p style="font-weight:600; color:var(--text-primary);">Kaveri Boys Block</p></div>
+            </div>
+          </div>
+
+          <!-- Fee Card -->
+          <div class="glass-card" style="display:flex; flex-direction:column; gap:12px;">
+            <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; border-bottom:1px solid var(--border-glass); padding-bottom:8px;">Fee Dues</h3>
+            <p style="font-size:12px; color:var(--text-secondary);">Outstanding tuition + mess fees:</p>
+            <h2 style="font-family:var(--font-title); font-size:26px; font-weight:800;">&#8377;<span id="fee-total-dues">0</span></h2>
+            <div style="font-size:12px; color:var(--text-muted); display:flex; flex-direction:column; gap:4px;">
+              <span>Tuition: <strong id="fee-tuition">₹0</strong></span>
+              <span>Mess: <strong id="fee-mess">₹0</strong></span>
+            </div>
+            <input type="number" id="fee-pay-amount" class="form-input" style="padding:8px 12px; font-size:13px;" placeholder="Enter amount to pay">
+            <button class="form-submit-btn" id="submit-fee-btn" style="width:100%; padding:10px; font-size:13px; display:flex; justify-content:center; gap:8px;">
+              <i class="bx bx-credit-card"></i> Pay Dues
+            </button>
+          </div>
+        </div>
+
+        <!-- Events Section -->
+        <div style="margin-top:10px;">
+          <h3 style="font-family:var(--font-title); font-size:18px; font-weight:700; margin-bottom:18px; display:flex; align-items:center; gap:8px;">
+            <i class="bx bx-calendar-event" style="color:var(--color-primary);"></i> Upcoming Campus Events
+          </h3>
+          <div id="dashboard-events-list"></div>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           2. ATTENDANCE TAB
+      ===================================================== -->
+      <div id="tab-attendance" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>Subject Attendance</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">Minimum required: 75% for semester exam authorization.</p>
+        </div>
+
+        <!-- Summary Stats -->
+        <div style="display:flex; gap:25px; background:var(--bg-glass); border:1px solid var(--border-glass); border-radius:12px; padding:18px 25px; margin-bottom:25px; flex-wrap:wrap;">
+          <div style="text-align:center;">
+            <h4 style="font-size:24px; font-weight:800; color:var(--color-secondary);">78%</h4>
+            <p style="font-size:11px; color:var(--text-muted); margin-top:3px;">Overall Avg</p>
+          </div>
+          <div style="width:1px; background:var(--border-glass);"></div>
+          <div style="text-align:center;">
+            <h4 style="font-size:24px; font-weight:800; color:var(--color-primary);">42</h4>
+            <p style="font-size:11px; color:var(--text-muted); margin-top:3px;">Classes Attended</p>
+          </div>
+          <div style="width:1px; background:var(--border-glass);"></div>
+          <div style="text-align:center;">
+            <h4 style="font-size:24px; font-weight:800; color:var(--color-danger);">12</h4>
+            <p style="font-size:11px; color:var(--text-muted); margin-top:3px;">Classes Absent</p>
+          </div>
+          <div style="width:1px; background:var(--border-glass);"></div>
+          <div style="text-align:center;">
+            <h4 style="font-size:24px; font-weight:800; color:var(--color-accent);">54</h4>
+            <p style="font-size:11px; color:var(--text-muted); margin-top:3px;">Total Conducted</p>
+          </div>
+          <div style="width:1px; background:var(--border-glass);"></div>
+          <div style="text-align:center;">
+            <h4 style="font-size:24px; font-weight:800; color:#a78bfa;">2</h4>
+            <p style="font-size:11px; color:var(--text-muted); margin-top:3px;">Subjects Below 75%</p>
+          </div>
+        </div>
+
+        <div class="attendance-grid" id="attendance-grid-container">
+          <!-- SVG Circles injected dynamically -->
+        </div>
+
+        <!-- Attendance Legend -->
+        <div style="margin-top:25px; background:var(--bg-glass); border:1px solid var(--border-glass); border-radius:10px; padding:15px 20px;">
+          <h4 style="font-family:var(--font-title); font-size:13px; font-weight:700; margin-bottom:8px; color:var(--text-primary);">Attendance Policy</h4>
+          <p style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+            Students must maintain a minimum of <strong>75% attendance</strong> in each subject to be eligible for the semester end examinations (as per Anna University regulations). 
+            Students falling below 65% will be barred from examinations. Condonation of shortage may be considered for medical emergencies with valid documentation.
+          </p>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           3. MARKS & GPA TAB
+      ===================================================== -->
+      <div id="tab-marks" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>Academic Grading</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">Internal Assessments, Semester Grades and GPA Index</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:15px; margin-bottom:25px;">
+          <div style="background:var(--bg-glass); border:1px solid var(--border-glass); border-radius:12px; padding:18px; text-align:center;">
+            <p style="font-size:10px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">CGPA</p>
+            <h3 id="gpa-display" style="font-size:26px; font-weight:800; color:var(--color-primary); margin-top:5px;">8.75</h3>
+          </div>
+          <div style="background:var(--bg-glass); border:1px solid var(--border-glass); border-radius:12px; padding:18px; text-align:center;">
+            <p style="font-size:10px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Current Semester GPA</p>
+            <h3 style="font-size:26px; font-weight:800; color:var(--color-secondary); margin-top:5px;">8.92</h3>
+          </div>
+          <div style="background:var(--bg-glass); border:1px solid var(--border-glass); border-radius:12px; padding:18px; text-align:center;">
+            <p style="font-size:10px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Avg Internal</p>
+            <h3 style="font-size:26px; font-weight:800; color:var(--color-accent); margin-top:5px;">42/50</h3>
+          </div>
+          <div style="background:var(--bg-glass); border:1px solid var(--border-glass); border-radius:12px; padding:18px; text-align:center;">
+            <p style="font-size:10px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Exam Status</p>
+            <h3 style="font-size:20px; font-weight:800; color:var(--color-secondary); margin-top:5px;">Eligible</h3>
+          </div>
+          <div style="background:var(--bg-glass); border:1px solid var(--border-glass); border-radius:12px; padding:18px; text-align:center;">
+            <p style="font-size:10px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Department Rank</p>
+            <h3 style="font-size:26px; font-weight:800; color:#a78bfa; margin-top:5px;">#12</h3>
+          </div>
+        </div>
+
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Subject Code</th>
+                <th>Subject Name</th>
+                <th>Internal (out of 50)</th>
+                <th>Semester Grade</th>
+                <th>Grade Point</th>
+                <th>Exam Eligibility</th>
+              </tr>
+            </thead>
+            <tbody id="marks-table-body">
+              <!-- Marks rows injected dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Grade Chart Legend -->
+        <div style="margin-top:20px; background:var(--bg-glass); border:1px solid var(--border-glass); border-radius:10px; padding:15px 20px;">
+          <h4 style="font-family:var(--font-title); font-size:13px; font-weight:700; margin-bottom:10px;">Anna University Grading Scale (R-2021)</h4>
+          <div style="display:flex; flex-wrap:wrap; gap:12px; font-size:12px; color:var(--text-secondary);">
+            <span><strong style="color:var(--color-primary);">O</strong> — Outstanding (91-100) — 10 pts</span>
+            <span><strong style="color:var(--color-secondary);">A+</strong> — Excellent (81-90) — 9 pts</span>
+            <span><strong style="color:#34d399;">A</strong> — Very Good (71-80) — 8 pts</span>
+            <span><strong style="color:var(--color-accent);">B+</strong> — Good (61-70) — 7 pts</span>
+            <span><strong style="color:#fb923c;">B</strong> — Average (50-60) — 6 pts</span>
+            <span><strong style="color:var(--color-danger);">U</strong> — Fail (&lt;50) — 0 pts</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           4. CLASS TIMETABLE TAB
+      ===================================================== -->
+      <div id="tab-timetable" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>Weekly Class Timetable</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">Academic Year 2026-2027 | Semester 5 | CSE Department</p>
+        </div>
+
+        <div class="glass-card" style="overflow-x:auto; padding:0; margin-bottom:25px;">
+          <table class="data-table" style="min-width:750px;">
+            <thead>
+              <tr>
+                <th style="min-width:110px;">Time Slot</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:700;">08:00 – 09:00</td>
+                <td>Operating Systems<br><small style="color:var(--text-muted);">CSE-301 | Dr. Ramachandran</small></td>
+                <td>DBMS<br><small style="color:var(--text-muted);">CSE-302 | Mrs. Priya D</small></td>
+                <td>Computer Networks<br><small style="color:var(--text-muted);">CSE-303 | Mr. Rajendran</small></td>
+                <td>Software Engineering<br><small style="color:var(--text-muted);">CSE-304 | Ms. Bhavani</small></td>
+                <td>Operating Systems<br><small style="color:var(--text-muted);">CSE-301 | Dr. Ramachandran</small></td>
+              </tr>
+              <tr>
+                <td style="font-weight:700;">09:00 – 10:00</td>
+                <td>DBMS<br><small style="color:var(--text-muted);">CSE-302 | Mrs. Priya D</small></td>
+                <td>Computer Networks<br><small style="color:var(--text-muted);">CSE-303 | Mr. Rajendran</small></td>
+                <td>Software Engineering<br><small style="color:var(--text-muted);">CSE-304 | Ms. Bhavani</small></td>
+                <td>Algorithm Design<br><small style="color:var(--text-muted);">CSE-305 | Mr. Sivasubramanian</small></td>
+                <td>DBMS Lab<br><small style="color:var(--text-muted);">Lab C-202 | Mrs. Priya D</small></td>
+              </tr>
+              <tr style="background:rgba(16,185,129,0.05);">
+                <td style="font-weight:700;">10:00 – 10:15</td>
+                <td colspan="5" style="text-align:center; color:var(--color-secondary); font-weight:600;">&#9749; Short Break</td>
+              </tr>
+              <tr>
+                <td style="font-weight:700;">10:15 – 11:15</td>
+                <td>Algorithm Design<br><small style="color:var(--text-muted);">CSE-305 | Mr. Sivasubramanian</small></td>
+                <td>Operating Systems Lab<br><small style="color:var(--text-muted);">Lab C-101 | Dr. Ramachandran</small></td>
+                <td>Algorithm Design<br><small style="color:var(--text-muted);">CSE-305 | Mr. Sivasubramanian</small></td>
+                <td>Operating Systems<br><small style="color:var(--text-muted);">CSE-301 | Dr. Ramachandran</small></td>
+                <td>Computer Networks<br><small style="color:var(--text-muted);">CSE-303 | Mr. Rajendran</small></td>
+              </tr>
+              <tr>
+                <td style="font-weight:700;">11:15 – 12:15</td>
+                <td>Computer Networks<br><small style="color:var(--text-muted);">CSE-303 | Mr. Rajendran</small></td>
+                <td>Software Engineering<br><small style="color:var(--text-muted);">CSE-304 | Ms. Bhavani</small></td>
+                <td>DBMS<br><small style="color:var(--text-muted);">CSE-302 | Mrs. Priya D</small></td>
+                <td>DBMS Lab<br><small style="color:var(--text-muted);">Lab C-202 | Mrs. Priya D</small></td>
+                <td>Software Engineering<br><small style="color:var(--text-muted);">CSE-304 | Ms. Bhavani</small></td>
+              </tr>
+              <tr style="background:rgba(245,158,11,0.05);">
+                <td style="font-weight:700;">12:15 – 13:15</td>
+                <td colspan="5" style="text-align:center; color:var(--color-accent); font-weight:600;">&#127869;&#65039; Lunch Break | Mess: 12:15 PM – 1:15 PM</td>
+              </tr>
+              <tr>
+                <td style="font-weight:700;">13:15 – 14:15</td>
+                <td>Prof. Elective I<br><small style="color:var(--text-muted);">CSE-306 | Mr. Anand</small></td>
+                <td>Algorithm Design<br><small style="color:var(--text-muted);">CSE-305 | Mr. Sivasubramanian</small></td>
+                <td>Networks Lab<br><small style="color:var(--text-muted);">Lab C-103 | Mr. Rajendran</small></td>
+                <td>Prof. Elective I<br><small style="color:var(--text-muted);">CSE-306 | Mr. Anand</small></td>
+                <td>Tutorial / Remedial<br><small style="color:var(--text-muted);">All Subjects</small></td>
+              </tr>
+              <tr>
+                <td style="font-weight:700;">14:15 – 15:15</td>
+                <td>Environmental Science<br><small style="color:var(--text-muted);">GE3451 | Dept. Science</small></td>
+                <td>Library / Self-Study<br><small style="color:var(--text-muted);">Central Library</small></td>
+                <td>Prof. Elective I<br><small style="color:var(--text-muted);">CSE-306 | Mr. Anand</small></td>
+                <td>Environmental Science<br><small style="color:var(--text-muted);">GE3451 | Dept. Science</small></td>
+                <td>Club Activities / Sports<br><small style="color:var(--text-muted);">Sports Complex</small></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Exam Timetable -->
+        <div class="glass-card" style="margin-top:10px;">
+          <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+            <i class="bx bx-notepad" style="color:var(--color-danger);"></i> Semester 5 Exam Schedule — November 2026
+          </h3>
+          <div class="data-table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>Date</th><th>Subject Code</th><th>Subject Name</th><th>Session</th><th>Duration</th><th>Hall</th></tr></thead>
+              <tbody>
+                <tr><td><strong>10 Nov 2026</strong></td><td>CSE3501</td><td>Operating Systems</td><td>FN (10:00 AM)</td><td>3 hrs</td><td>Hall A</td></tr>
+                <tr><td><strong>12 Nov 2026</strong></td><td>CSE3502</td><td>Database Management Systems</td><td>FN (10:00 AM)</td><td>3 hrs</td><td>Hall B</td></tr>
+                <tr><td><strong>14 Nov 2026</strong></td><td>CSE3503</td><td>Computer Networks</td><td>FN (10:00 AM)</td><td>3 hrs</td><td>Hall A</td></tr>
+                <tr><td><strong>17 Nov 2026</strong></td><td>CSE3504</td><td>Software Engineering</td><td>AN (02:00 PM)</td><td>3 hrs</td><td>Hall C</td></tr>
+                <tr><td><strong>19 Nov 2026</strong></td><td>CSE3505</td><td>Algorithm Design &amp; Analysis</td><td>FN (10:00 AM)</td><td>3 hrs</td><td>Hall B</td></tr>
+                <tr><td><strong>21 Nov 2026</strong></td><td>CSE3506</td><td>Professional Elective I</td><td>AN (02:00 PM)</td><td>3 hrs</td><td>Hall A</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           5. HOSTEL & BUS TAB
+      ===================================================== -->
+      <div id="tab-hostel-bus" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>Campus Facilities Details</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">Hostel Allocations and Transportation Timings</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr; gap:25px;">
+          <!-- Hostel Info -->
+          <div class="glass-card">
+            <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+              <i class="bx bx-hotel" style="color:var(--color-primary);"></i> Hostel Room Allocation
+            </h3>
+            <div id="hostel-details-box"></div>
+            <div style="margin-top:20px; background:rgba(0,0,0,0.15); border-radius:10px; padding:18px;">
+              <h4 style="font-family:var(--font-title); font-size:14px; font-weight:700; margin-bottom:12px; color:var(--color-primary);">Hostel Rules &amp; Facility Timings</h4>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13px; color:var(--text-secondary);">
+                <p><i class="bx bx-time" style="color:var(--color-accent);"></i> Weekday Curfew: <strong>10:00 PM</strong></p>
+                <p><i class="bx bx-time" style="color:var(--color-accent);"></i> Weekend Curfew: <strong>11:00 PM</strong></p>
+                <p><i class="bx bx-restaurant" style="color:var(--color-secondary);"></i> Breakfast: <strong>7:00 AM – 8:30 AM</strong></p>
+                <p><i class="bx bx-restaurant" style="color:var(--color-secondary);"></i> Lunch: <strong>12:15 PM – 1:15 PM</strong></p>
+                <p><i class="bx bx-restaurant" style="color:var(--color-secondary);"></i> Dinner: <strong>7:30 PM – 9:00 PM</strong></p>
+                <p><i class="bx bxl-wifi" style="color:var(--color-primary);"></i> Wi-Fi Hours: <strong>6:00 AM – 11:00 PM</strong></p>
+                <p><i class="bx bx-water" style="color:var(--color-primary);"></i> Hot Water: <strong>6:00 AM – 8:00 AM</strong></p>
+                <p><i class="bx bx-phone" style="color:var(--color-accent);"></i> Warden Emergency: <strong>0431-2770025</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bus Routes -->
+          <div class="glass-card">
+            <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+              <i class="bx bx-bus" style="color:var(--color-primary);"></i> Saranathan College Bus Routes &amp; Driver Contacts
+            </h3>
+            <div class="data-table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Route No.</th>
+                    <th>Key Stops</th>
+                    <th>Driver Name</th>
+                    <th>Mobile</th>
+                    <th>Morning Start</th>
+                    <th>Evening Return</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>Route 01</strong></td><td>Chatram Bus Stand &#8594; Panjappur &#8594; Ariyamangalam &#8594; College</td><td>Mr. Murugan</td><td>94432 10987</td><td>07:30 AM</td><td>05:30 PM</td></tr>
+                  <tr><td><strong>Route 02</strong></td><td>Thiruverumbur &#8594; BHEL &#8594; Ariyamangalam &#8594; College</td><td>Mr. Sekar</td><td>94432 10988</td><td>07:15 AM</td><td>05:15 PM</td></tr>
+                  <tr><td><strong>Route 03</strong></td><td>Srirangam &#8594; Golden Rock &#8594; TVS Tollgate &#8594; College</td><td>Mr. Kumar</td><td>94432 10989</td><td>07:20 AM</td><td>05:20 PM</td></tr>
+                  <tr><td><strong>Route 04</strong></td><td>Woraiyur &#8594; Arulpuram &#8594; Panjappur &#8594; College</td><td>Mr. Balaji</td><td>94432 10990</td><td>07:25 AM</td><td>05:25 PM</td></tr>
+                  <tr><td><strong>Route 05</strong></td><td>Trichy Central Station &#8594; Mannarpuram &#8594; College</td><td>Mr. Selvam</td><td>94432 10991</td><td>07:35 AM</td><td>05:35 PM</td></tr>
+                  <tr><td><strong>Route 06</strong></td><td>Vayalur &#8594; Kattur &#8594; NH-45 Bypass &#8594; College</td><td>Mr. Rajan</td><td>94432 10992</td><td>07:10 AM</td><td>05:10 PM</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p style="font-size:11px; color:var(--text-muted); margin-top:12px;"><i class="bx bx-info-circle"></i> All buses return from College at the end of each day. Route change requests must be made to the Transport Office 3 days in advance.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           6. CURRICULUM DOCS TAB
+      ===================================================== -->
+      <div id="tab-resources" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>Curriculum Handouts</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">Download Notes, Semester Syllabus, and Previous Question Papers</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:25px;">
+          <div class="glass-card">
+            <h3 style="font-family:var(--font-title); font-size:15px; font-weight:700; margin-bottom:15px; border-bottom:1px solid var(--border-glass); padding-bottom:8px;">&#128196; Handout Notes</h3>
+            <div id="dashboard-notes-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+          </div>
+          <div class="glass-card">
+            <h3 style="font-family:var(--font-title); font-size:15px; font-weight:700; margin-bottom:15px; border-bottom:1px solid var(--border-glass); padding-bottom:8px;">&#128218; Semester Syllabus</h3>
+            <div id="dashboard-syllabus-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+          </div>
+          <div class="glass-card">
+            <h3 style="font-family:var(--font-title); font-size:15px; font-weight:700; margin-bottom:15px; border-bottom:1px solid var(--border-glass); padding-bottom:8px;">&#128221; Previous Year Question Papers</h3>
+            <div id="dashboard-papers-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           7. LIBRARY SHELF TAB
+      ===================================================== -->
+      <div id="tab-library" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>Library Book Stack Coordinates</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">Browse all 58 books — search by title, author, or category. View physical location and reserve copies.</p>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap;">
+          <input type="text" id="lib-search-input" class="form-input" style="flex:1; min-width:200px;" placeholder="Search books by title, author, or category...">
+          <button id="lib-search-btn" class="form-submit-btn" style="padding:0 25px;"><i class="bx bx-search"></i> Search</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap:18px;" id="lib-search-results">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+
+      <!-- ====================================================
+           8. NOTICE BOARD TAB
+      ===================================================== -->
+      <div id="tab-notices" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>Official Notice Board</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">College announcements, circulars, academic alerts and placement notices.</p>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div class="glass-card" style="border-left:4px solid var(--color-danger);">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+              <span style="font-size:10px; font-weight:700; color:var(--color-danger); text-transform:uppercase; background:rgba(239,68,68,0.1); padding:2px 8px; border-radius:4px;">URGENT</span>
+            </div>
+            <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:8px;">Semester 5 Internal Assessment II — Exam Schedule</h3>
+            <p style="font-size:13px; color:var(--text-secondary); line-height:1.6;">The IA-II examinations for all 3rd-year UG students are scheduled from <strong>28 July – 2 August 2026</strong>. Exam hall tickets will be issued from the academic office. Students with attendance shortages must approach the HoD for condonation before 27 July.</p>
+            <span style="font-size:11px; color:var(--text-muted); margin-top:8px; display:block;"><i class="bx bx-calendar"></i> Posted: 20 July 2026 | Academic Section</span>
+          </div>
+
+          <div class="glass-card" style="border-left:4px solid var(--color-primary);">
+            <span style="font-size:10px; font-weight:700; color:var(--color-primary); text-transform:uppercase; background:rgba(59,130,246,0.1); padding:2px 8px; border-radius:4px; display:inline-block; margin-bottom:8px;">ACADEMIC</span>
+            <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:8px;">Anti-Ragging &amp; POSH Awareness Workshop — Compulsory</h3>
+            <p style="font-size:13px; color:var(--text-secondary); line-height:1.6;">All first-year students must attend the mandatory anti-ragging and prevention of sexual harassment (POSH) workshop on <strong>25 July 2026</strong> at 10:00 AM in the Main Auditorium. Attendance is compulsory and will be recorded.</p>
+            <span style="font-size:11px; color:var(--text-muted); margin-top:8px; display:block;"><i class="bx bx-calendar"></i> Posted: 18 July 2026 | Student Welfare Cell</span>
+          </div>
+
+          <div class="glass-card" style="border-left:4px solid var(--color-secondary);">
+            <span style="font-size:10px; font-weight:700; color:var(--color-secondary); text-transform:uppercase; background:rgba(16,185,129,0.1); padding:2px 8px; border-radius:4px; display:inline-block; margin-bottom:8px;">PLACEMENT</span>
+            <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:8px;">TCS National Qualifier Test (NQT) 2026 — Registration Open</h3>
+            <p style="font-size:13px; color:var(--text-secondary); line-height:1.6;">TCS NQT 2026 registrations are now open for all final-year B.E./B.Tech students with <strong>CGPA ≥ 6.0</strong> and no active backlogs. Students must register via the Saranathan T&P portal. Deadline: <strong>31 July 2026</strong>. Contact the Training &amp; Placement Cell, Room TP-101 for assistance.</p>
+            <span style="font-size:11px; color:var(--text-muted); margin-top:8px; display:block;"><i class="bx bx-calendar"></i> Posted: 15 July 2026 | T&P Cell</span>
+          </div>
+
+          <div class="glass-card" style="border-left:4px solid var(--color-accent);">
+            <span style="font-size:10px; font-weight:700; color:var(--color-accent); text-transform:uppercase; background:rgba(245,158,11,0.1); padding:2px 8px; border-radius:4px; display:inline-block; margin-bottom:8px;">CAMPUS</span>
+            <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:8px;">Annual Sports Day 2026 — Team Registrations Open</h3>
+            <p style="font-size:13px; color:var(--text-secondary); line-height:1.6;">Registrations for the Annual Sports Day events are open until <strong>22 July 2026</strong>. Events include Athletics, Shuttle Badminton, Table Tennis, Chess, Box Cricket, and Football 5-a-side. Submit your name and event preference to the Physical Education Department or the Sports Coordinator.</p>
+            <span style="font-size:11px; color:var(--text-muted); margin-top:8px; display:block;"><i class="bx bx-calendar"></i> Posted: 12 July 2026 | Physical Education Dept.</span>
+          </div>
+
+          <div class="glass-card" style="border-left:4px solid #a78bfa;">
+            <span style="font-size:10px; font-weight:700; color:#a78bfa; text-transform:uppercase; background:rgba(167,139,250,0.1); padding:2px 8px; border-radius:4px; display:inline-block; margin-bottom:8px;">LIBRARY</span>
+            <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:8px;">58 New Engineering Books Added to Central Library — July 2026</h3>
+            <p style="font-size:13px; color:var(--text-secondary); line-height:1.6;">The Central Library has added 58 new engineering textbooks covering AI/ML, Robotics, Control Systems, Embedded Systems, Data Structures, and more. Browse and reserve books via the <strong>Library Shelf</strong> tab in your student dashboard. Walk-in borrowing available at the library counter.</p>
+            <span style="font-size:11px; color:var(--text-muted); margin-top:8px; display:block;"><i class="bx bx-calendar"></i> Posted: 10 July 2026 | Central Library</span>
+          </div>
+
+          <div class="glass-card" style="border-left:4px solid #ec4899;">
+            <span style="font-size:10px; font-weight:700; color:#ec4899; text-transform:uppercase; background:rgba(236,72,153,0.1); padding:2px 8px; border-radius:4px; display:inline-block; margin-bottom:8px;">EVENTS</span>
+            <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:8px;">UNMAAD 2026 National Technical Symposium — Registration Live</h3>
+            <p style="font-size:13px; color:var(--text-secondary); line-height:1.6;">Saranathan College's flagship national tech fest UNMAAD 2026 is scheduled for <strong>15-17 August 2026</strong>. Events include Hackathon, Robotics, Paper Presentation, Code-O-Fiesta, IoT Design, and Cultural shows. External college registrations close on 10 August. Prize money: ₹5 Lakhs total.</p>
+            <span style="font-size:11px; color:var(--text-muted); margin-top:8px; display:block;"><i class="bx bx-calendar"></i> Posted: 05 July 2026 | Events Committee</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           9. PLACEMENTS & CAREER TAB
+      ===================================================== -->
+      <div id="tab-placements" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>Placements &amp; Career Hub</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">Training resources, company listings, placement stats, and upcoming drives.</p>
+        </div>
+
+        <!-- Stats Row -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap:20px; margin-bottom:28px;">
+          <div style="background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(16,185,129,0.05)); border:1px solid rgba(16,185,129,0.3); border-radius:12px; padding:20px; text-align:center;">
+            <h3 style="font-size:30px; font-weight:800; color:var(--color-secondary);">95%</h3>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Overall Placement 2025</p>
+          </div>
+          <div style="background:linear-gradient(135deg,rgba(59,130,246,0.2),rgba(59,130,246,0.05)); border:1px solid rgba(59,130,246,0.3); border-radius:12px; padding:20px; text-align:center;">
+            <h3 style="font-size:30px; font-weight:800; color:var(--color-primary);">&#8377;8.2 LPA</h3>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Highest Package Offered</p>
+          </div>
+          <div style="background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(245,158,11,0.05)); border:1px solid rgba(245,158,11,0.3); border-radius:12px; padding:20px; text-align:center;">
+            <h3 style="font-size:30px; font-weight:800; color:var(--color-accent);">120+</h3>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Recruiting Companies</p>
+          </div>
+          <div style="background:linear-gradient(135deg,rgba(236,72,153,0.2),rgba(236,72,153,0.05)); border:1px solid rgba(236,72,153,0.3); border-radius:12px; padding:20px; text-align:center;">
+            <h3 style="font-size:30px; font-weight:800; color:#ec4899;">450+</h3>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Students Placed 2025</p>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(310px,1fr)); gap:25px;">
+
+          <!-- Top Recruiters -->
+          <div class="glass-card">
+            <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:15px; border-bottom:1px solid var(--border-glass); padding-bottom:8px;">&#127970; Top Recruiting Companies</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13px;">
+              <div style="padding:10px 12px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border-glass);">
+                <strong>TCS</strong><br><small style="color:var(--text-muted);">3–5 LPA | IT Services</small>
+              </div>
+              <div style="padding:10px 12px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border-glass);">
+                <strong>Infosys</strong><br><small style="color:var(--text-muted);">3.6–5.5 LPA | Consulting</small>
+              </div>
+              <div style="padding:10px 12px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border-glass);">
+                <strong>Wipro</strong><br><small style="color:var(--text-muted);">3.5–5 LPA | Technology</small>
+              </div>
+              <div style="padding:10px 12px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border-glass);">
+                <strong>Cognizant</strong><br><small style="color:var(--text-muted);">4–6 LPA | Digital Svcs</small>
+              </div>
+              <div style="padding:10px 12px; background:rgba(59,130,246,0.1); border-radius:8px; border:1px solid rgba(59,130,246,0.3);">
+                <strong style="color:var(--color-primary);">Zoho Corp</strong><br><small style="color:var(--text-muted);">5–8.2 LPA | Product Co.</small>
+              </div>
+              <div style="padding:10px 12px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border-glass);">
+                <strong>HCL Technologies</strong><br><small style="color:var(--text-muted);">3.5–5 LPA | IT Services</small>
+              </div>
+              <div style="padding:10px 12px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border-glass);">
+                <strong>Hexaware</strong><br><small style="color:var(--text-muted);">3.5 LPA | BPO/Consult</small>
+              </div>
+              <div style="padding:10px 12px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border-glass);">
+                <strong>L&amp;T Technology</strong><br><small style="color:var(--text-muted);">4–6 LPA | Engineering</small>
+              </div>
+              <div style="padding:10px 12px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border-glass);">
+                <strong>Capgemini</strong><br><small style="color:var(--text-muted);">4–5 LPA | Consulting</small>
+              </div>
+              <div style="padding:10px 12px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border-glass);">
+                <strong>Freshworks</strong><br><small style="color:var(--text-muted);">6–7 LPA | SaaS</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Eligibility Criteria -->
+          <div class="glass-card">
+            <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:15px; border-bottom:1px solid var(--border-glass); padding-bottom:8px;">&#128203; Eligibility Criteria</h3>
+            <ul style="list-style:none; padding:0; font-size:13px; color:var(--text-secondary); display:flex; flex-direction:column; gap:12px;">
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <i class="bx bx-check-circle" style="color:var(--color-secondary); font-size:18px; flex-shrink:0; margin-top:1px;"></i>
+                <span>Minimum CGPA of <strong>6.0</strong> (most companies) — CGPA ≥ <strong>7.5</strong> for top product firms (Zoho, etc.)</span>
+              </li>
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <i class="bx bx-check-circle" style="color:var(--color-secondary); font-size:18px; flex-shrink:0; margin-top:1px;"></i>
+                <span>No active backlogs at the time of recruitment and joining</span>
+              </li>
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <i class="bx bx-check-circle" style="color:var(--color-secondary); font-size:18px; flex-shrink:0; margin-top:1px;"></i>
+                <span>Minimum <strong>75%</strong> marks throughout 10th, 12th, and UG degree (diploma holders exempted)</span>
+              </li>
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <i class="bx bx-check-circle" style="color:var(--color-secondary); font-size:18px; flex-shrink:0; margin-top:1px;"></i>
+                <span>Valid government-issued ID proof and bonafide certificate from college</span>
+              </li>
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <i class="bx bx-check-circle" style="color:var(--color-secondary); font-size:18px; flex-shrink:0; margin-top:1px;"></i>
+                <span>No gap in education exceeding 1 year without valid documentation</span>
+              </li>
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <i class="bx bx-check-circle" style="color:var(--color-secondary); font-size:18px; flex-shrink:0; margin-top:1px;"></i>
+                <span>Students must not accept multiple job offers simultaneously</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Upcoming Drives -->
+          <div class="glass-card">
+            <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:15px; border-bottom:1px solid var(--border-glass); padding-bottom:8px;">&#128197; Upcoming Placement Drives</h3>
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div style="padding:14px; background:rgba(16,185,129,0.1); border-radius:8px; border-left:3px solid var(--color-secondary);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong style="font-size:14px;">TCS NQT 2026</strong>
+                  <span style="font-size:10px; background:rgba(16,185,129,0.2); color:var(--color-secondary); padding:2px 8px; border-radius:4px; font-weight:700;">OPEN</span>
+                </div>
+                <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Date: 05 Aug 2026 | Online | CGPA ≥ 6.0<br>Reg Deadline: 31 July 2026</p>
+              </div>
+              <div style="padding:14px; background:rgba(59,130,246,0.1); border-radius:8px; border-left:3px solid var(--color-primary);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong style="font-size:14px;">Zoho Campus Recruitment</strong>
+                  <span style="font-size:10px; background:rgba(59,130,246,0.2); color:var(--color-primary); padding:2px 8px; border-radius:4px; font-weight:700;">UPCOMING</span>
+                </div>
+                <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Date: 20 Aug 2026 | On-Campus | CGPA ≥ 7.5<br>CSE/IT/ECE departments only</p>
+              </div>
+              <div style="padding:14px; background:rgba(245,158,11,0.1); border-radius:8px; border-left:3px solid var(--color-accent);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong style="font-size:14px;">Infosys InfyTQ</strong>
+                  <span style="font-size:10px; background:rgba(245,158,11,0.2); color:var(--color-accent); padding:2px 8px; border-radius:4px; font-weight:700;">OPEN</span>
+                </div>
+                <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Date: 28 Aug 2026 | Online | All Branches<br>Registration free via InfyTQ portal</p>
+              </div>
+              <div style="padding:14px; background:rgba(167,139,250,0.1); border-radius:8px; border-left:3px solid #a78bfa;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong style="font-size:14px;">Cognizant GenC Next</strong>
+                  <span style="font-size:10px; background:rgba(167,139,250,0.2); color:#a78bfa; padding:2px 8px; border-radius:4px; font-weight:700;">UPCOMING</span>
+                </div>
+                <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Date: 15 Sep 2026 | On-Campus | CGPA ≥ 6.5<br>Package: 5.5 LPA</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ====================================================
+           10. AI GEMINI ASSISTANT TAB
+      ===================================================== -->
+      <div id="tab-chatbot" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>AI Gemini Assistant</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">Ask about library book locations, syllabus, marks, placements, and campus resources.</p>
+        </div>
+        <div style="height: 550px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-glass); background: var(--bg-glass);">
+          <iframe src="chatbot.html" style="width:100%; height:100%; border:none;"></iframe>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           11. SETTINGS TAB
+      ===================================================== -->
+      <div id="tab-settings" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>Portal Preferences</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">Configure theme, notifications, and privacy settings.</p>
+        </div>
+
+        <div class="glass-card" style="display:flex; flex-direction:column; gap:20px; max-width:600px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-glass); padding-bottom:15px;">
+            <div>
+              <h4 style="font-family:var(--font-title); font-size:15px; font-weight:700;">Dark / Light Theme</h4>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">Toggle between night and day portal themes.</p>
+            </div>
+            <button class="form-submit-btn" style="padding: 8px 18px;" onclick="document.getElementById('theme-toggle-btn').click();">Switch Theme</button>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-glass); padding-bottom:15px;">
+            <div>
+              <h4 style="font-family:var(--font-title); font-size:15px; font-weight:700;">Email Notifications</h4>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">Receive exam schedules and grade slips via email.</p>
+            </div>
+            <input type="checkbox" checked style="width:20px; height:20px; cursor:pointer;">
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-glass); padding-bottom:15px;">
+            <div>
+              <h4 style="font-family:var(--font-title); font-size:15px; font-weight:700;">Placement Profile Visibility</h4>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">Allow T&amp;P Cell to view your CGPA and academic records.</p>
+            </div>
+            <input type="checkbox" checked style="width:20px; height:20px; cursor:pointer;">
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-glass); padding-bottom:15px;">
+            <div>
+              <h4 style="font-family:var(--font-title); font-size:15px; font-weight:700;">Fee Reminder Alerts</h4>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">Get reminders before tuition fee due dates.</p>
+            </div>
+            <input type="checkbox" checked style="width:20px; height:20px; cursor:pointer;">
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <h4 style="font-family:var(--font-title); font-size:15px; font-weight:700;">Event Registration Alerts</h4>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">Get notified about upcoming campus events and drives.</p>
+            </div>
+            <input type="checkbox" checked style="width:20px; height:20px; cursor:pointer;">
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Scripts — mock-data.js must load BEFORE library-catalog.js for seeding to use BOOKS_CATALOG -->
+  <script src="js/library-catalog.js"></script>
+  <script src="js/mock-data.js"></script>
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

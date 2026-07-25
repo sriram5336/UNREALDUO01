@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Interactive Campus Viewer | Saranathan College</title>
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <!-- Three.js and OrbitControls CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- GLTF Model Loader CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+<body style="overflow: hidden; height: 100vh;">
+
+  <!-- Page Loader -->
+  <div class="preloader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">INITIALIZING 3D ENVIRONMENT</div>
+    <div class="progress-container" style="width: 240px; height: 6px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; margin-top: 20px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1);">
+      <div id="progress-bar-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); transition: width 0.2s ease-out; box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);"></div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header></header>
+
+  <!-- Canvas Container covering full screen minus header -->
+  <div style="width: 100vw; height: calc(100vh - 70px); margin-top: 70px; position: relative;">
+    
+    <!-- Three.js Canvas -->
+    <canvas id="three-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+    
+    <!-- 3D Navigation Guide UI -->
+    <div style="position: absolute; top: 20px; left: 20px; pointer-events: none; z-index: 10;">
+      <div class="glass-card animate-slide-right" style="padding: 15px 20px; pointer-events: auto; max-width: 320px;">
+        <h3 style="font-family: var(--font-title); font-size: 16px; font-weight: 700; margin-bottom: 8px;">
+          <i class="bx bx-compass" style="color:var(--color-primary); vertical-align:middle;"></i> 3D Campus Navigator
+        </h3>
+        <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+          • <strong>Rotate:</strong> Click & Drag Left Mouse<br>
+          • <strong>Pan:</strong> Click & Drag Right Mouse<br>
+          • <strong>Zoom:</strong> Scroll Wheel<br>
+          • <strong>Explore:</strong> Hover & Click buildings to open records.
+        </p>
+      </div>
+    </div>
+
+    <!-- Building Info Glassmorphic Popup (Hidden by default, raycaster triggers it) -->
+    <div id="building-info-card" style="display: none; position: absolute; bottom: 30px; left: 30px; z-index: 10; width: 340px; pointer-events: auto;">
+      <div class="glass-card glass-glow-card" style="padding: 25px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h3 id="info-title" style="font-family: var(--font-title); font-size: 18px; font-weight: 700; color:var(--text-primary);">Building Details</h3>
+          <button onclick="document.getElementById('building-info-card').style.display='none'" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:20px;">
+            <i class="bx bx-x"></i>
+          </button>
+        </div>
+        
+        <!-- Details injection -->
+        <div id="info-details" style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px;">
+          <!-- Dynamically filled -->
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button id="info-navigate-btn" class="form-submit-btn" style="flex:1; padding: 10px 0; font-size: 13px; text-align:center;">
+            <i class="bx bx-directions"></i> Get Directions
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+  <script src="js/three-scene.js"></script>
+</body>
+</html>

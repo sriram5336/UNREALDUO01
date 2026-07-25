@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Control Panel | Saranathan College</title>
+  <meta name="description" content="Admin database control panel for Saranathan College portal. Browse, insert, and manage all 55 database tables and 387 attributes.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    :root {
+      --db-accent: #7c6fff;
+      --db-accent2: #56cfb2;
+      --db-danger: #ff5c7c;
+      --db-success: #3ecf8e;
+      --db-warn: #f59e0b;
+    }
+
+    /* Layout */
+    .db-wrapper { max-width: 1400px; margin: 0 auto; padding: 110px 20px 60px; }
+
+    /* Metric Cards */
+    .db-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .db-metric-card {
+      background: rgba(18,18,35,0.72);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(124,111,255,0.2);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex; flex-direction: column; gap: 6px;
+      position: relative; overflow: hidden;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .db-metric-card:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(0,0,0,.4); }
+    .db-metric-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--db-accent), var(--db-accent2));
+    }
+    .db-metric-num { font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 900; background: linear-gradient(135deg, #fff, var(--db-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .db-metric-label { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+    .db-metric-icon { position: absolute; right: 16px; top: 16px; font-size: 28px; opacity: .15; }
+
+    /* Main grid */
+    .db-grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
+    @media (max-width: 900px) { .db-grid { grid-template-columns: 1fr; } }
+
+    /* Glass panels */
+    .db-panel {
+      background: rgba(18,18,35,0.72);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(124,111,255,0.18);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 16px 48px rgba(0,0,0,.4);
+    }
+    .db-panel-title {
+      font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800;
+      letter-spacing: 1px; text-transform: uppercase; color: var(--db-accent);
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+
+    /* Table selector */
+    .table-list { display: flex; flex-direction: column; gap: 4px; max-height: 500px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--db-accent) transparent; }
+    .table-list::-webkit-scrollbar { width: 4px; }
+    .table-list::-webkit-scrollbar-track { background: transparent; }
+    .table-list::-webkit-scrollbar-thumb { background: var(--db-accent); border-radius: 4px; }
+    .table-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 14px; border-radius: 10px; cursor: pointer;
+      font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 500;
+      transition: all .2s; border: 1px solid transparent;
+    }
+    .table-item:hover { background: rgba(124,111,255,0.12); border-color: rgba(124,111,255,0.2); color: #fff; }
+    .table-item.active { background: rgba(124,111,255,0.2); border-color: var(--db-accent); color: #fff; }
+    .table-item .col-count { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: rgba(124,111,255,0.2); color: var(--db-accent); font-weight: 700; }
+
+    /* Search tables */
+    .table-search { width: 100%; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 9px 12px; font-size: 13px; color: #fff; font-family: 'Inter', sans-serif; outline: none; margin-bottom: 12px; box-sizing: border-box; transition: border-color .2s; }
+    .table-search:focus { border-color: var(--db-accent); }
+    .table-search::placeholder { color: rgba(255,255,255,.25); }
+
+    /* Form area */
+    .db-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px 18px; margin-bottom: 18px; }
+    .db-form-group { display: flex; flex-direction: column; gap: 5px; }
+    .db-form-group label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: .4px; }
+    .db-form-group label .req { color: var(--db-danger); margin-left: 2px; }
+    .db-form-input {
+      width: 100%; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 9px; padding: 9px 12px; font-size: 13px; color: #fff; font-family: 'Inter', sans-serif;
+      transition: border-color .25s, box-shadow .25s; box-sizing: border-box; outline: none;
+    }
+    .db-form-input:focus { border-color: var(--db-accent); background: rgba(124,111,255,.07); box-shadow: 0 0 0 3px rgba(124,111,255,.2); }
+    .db-form-input::placeholder { color: rgba(255,255,255,.2); }
+    select.db-form-input { cursor: pointer; }
+    select.db-form-input option { background: #1a1a2e; color: #fff; }
+    textarea.db-form-input { resize: vertical; min-height: 72px; }
+
+    /* Buttons */
+    .db-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 10px 22px; border-radius: 10px; font-size: 13px; font-weight: 700;
+      cursor: pointer; border: none; font-family: 'Inter', sans-serif; transition: all .2s;
+    }
+    .db-btn-primary { background: linear-gradient(135deg, var(--db-accent), #a78bfa); color: #fff; box-shadow: 0 6px 20px rgba(124,111,255,.4); }
+    .db-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(124,111,255,.5); }
+    .db-btn-danger { background: rgba(255,92,124,.15); border: 1px solid rgba(255,92,124,.3); color: var(--db-danger); }
+    .db-btn-danger:hover { background: rgba(255,92,124,.25); }
+    .db-btn-ghost { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.7); }
+    .db-btn-ghost:hover { background: rgba(255,255,255,.12); color: #fff; }
+    .db-btn-success { background: linear-gradient(135deg, var(--db-accent2), #38bdf8); color: #fff; box-shadow: 0 6px 20px rgba(86,207,178,.35); }
+    .db-btn-success:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(86,207,178,.45); }
+    .db-btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    /* Status messages */
+    .db-status { display: none; padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; margin-bottom: 16px; border: 1px solid transparent; }
+    .db-status.success { background: rgba(62,207,142,.12); border-color: var(--db-success); color: var(--db-success); }
+    .db-status.error { background: rgba(255,92,124,.12); border-color: var(--db-danger); color: var(--db-danger); }
+    .db-status.info { background: rgba(124,111,255,.12); border-color: var(--db-accent); color: var(--db-accent); }
+
+    /* Data table */
+    .db-table-wrap { overflow-x: auto; margin-top: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,.07); }
+    .db-data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .db-data-table th { background: rgba(124,111,255,.12); padding: 10px 14px; text-align: left; font-weight: 700; text-transform: uppercase; font-size: 10.5px; letter-spacing: .5px; color: rgba(255,255,255,.7); white-space: nowrap; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .db-data-table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,.05); color: rgba(255,255,255,.8); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .db-data-table tr:last-child td { border-bottom: none; }
+    .db-data-table tr:hover td { background: rgba(124,111,255,.06); }
+    .db-data-table .del-btn { background: none; border: none; color: var(--db-danger); cursor: pointer; font-size: 15px; padding: 2px 6px; border-radius: 6px; transition: background .2s; }
+    .db-data-table .del-btn:hover { background: rgba(255,92,124,.15); }
+
+    /* Divider */
+    .db-divider { height: 1px; background: rgba(255,255,255,.07); margin: 20px 0; }
+
+    /* Loader */
+    .db-loader { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,.5); font-size: 13px; padding: 20px 0; }
+    .db-spin { width: 18px; height: 18px; border: 2px solid rgba(124,111,255,.3); border-top-color: var(--db-accent); border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Selected table header */
+    .selected-table-header {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .selected-table-name {
+      font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800;
+      background: linear-gradient(90deg, #fff, var(--db-accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .selected-table-meta { font-size: 12px; color: rgba(255,255,255,.4); margin-top: 2px; }
+
+    /* Empty state */
+    .db-empty { text-align: center; padding: 40px 20px; color: rgba(255,255,255,.3); }
+    .db-empty i { font-size: 42px; margin-bottom: 12px; display: block; }
+    .db-empty p { font-size: 13px; }
+
+    /* Tab pills */
+    .db-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .db-tab-pill { padding: 8px 18px; border-radius: 20px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: all .2s; color: rgba(255,255,255,.5); background: rgba(255,255,255,.04); }
+    .db-tab-pill.active { background: rgba(124,111,255,.2); border-color: var(--db-accent); color: #fff; }
+
+    /* Search records bar */
+    .db-records-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .db-rec-search { flex: 1; min-width: 180px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: 9px; padding: 8px 12px; font-size: 13px; color: #fff; font-family: 'Inter', sans-serif; outline: none; box-sizing: border-box; transition: border-color .2s; }
+    .db-rec-search:focus { border-color: var(--db-accent); }
+    .db-rec-search::placeholder { color: rgba(255,255,255,.25); }
+
+    /* Badge */
+    .db-badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 10.5px; font-weight: 700; }
+    .db-badge-purple { background: rgba(124,111,255,.2); color: var(--db-accent); }
+    .db-badge-green { background: rgba(62,207,142,.2); color: var(--db-success); }
+    .db-badge-red { background: rgba(255,92,124,.2); color: var(--db-danger); }
+  </style>
+</head>
+<body>
+  <div class="preloader"><div class="loader-spinner"></div><div class="loader-text">LOADING DATABASE CONTROL</div></div>
+  <canvas class="particle-canvas"></canvas>
+  <div class="circle-glow"></div>
+  <header></header>
+
+  <main class="db-wrapper">
+    <!-- Page header -->
+    <div style="margin-bottom:28px;">
+      <h1 style="font-family:'Outfit',sans-serif;font-size:28px;font-weight:900;background:linear-gradient(90deg,#fff 0%,var(--db-accent) 60%,var(--db-accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;">
+        <i class="bx bx-data" style="-webkit-text-fill-color:var(--db-accent);font-size:28px;vertical-align:middle;margin-right:8px;"></i>Database Control Panel
+      </h1>
+      <p style="font-size:13px;color:rgba(255,255,255,.4);">Dynamically parsed schema from database.sql — all 55 tables and 387 attributes in one interface.</p>
+    </div>
+
+    <!-- Metric Cards -->
+    <div class="db-metrics">
+      <div class="db-metric-card">
+        <i class="bx bx-table db-metric-icon"></i>
+        <div class="db-metric-num" id="metric-tables">0</div>
+        <div class="db-metric-label">Total Tables</div>
+      </div>
+      <div class="db-metric-card">
+        <i class="bx bx-columns db-metric-icon"></i>
+        <div class="db-metric-num" id="metric-cols">0</div>
+        <div class="db-metric-label">Total Attributes</div>
+      </div>
+      <div class="db-metric-card">
+        <i class="bx bx-calculator db-metric-icon"></i>
+        <div class="db-metric-num" id="metric-avg">0</div>
+        <div class="db-metric-label">Avg Cols / Table</div>
+      </div>
+      <div class="db-metric-card">
+        <i class="bx bx-check-circle db-metric-icon"></i>
+        <div class="db-metric-num" id="metric-records">550</div>
+        <div class="db-metric-label">Sample Records</div>
+      </div>
+    </div>
+
+    <!-- Main two-column layout -->
+    <div class="db-grid">
+
+      <!-- LEFT: Table list -->
+      <div class="db-panel" style="position:sticky;top:90px;">
+        <div class="db-panel-title"><i class="bx bx-list-ul"></i>55 Tables</div>
+        <input class="table-search" id="tableSearchInput" placeholder="🔍  Search tables..." oninput="filterTables(this.value)">
+        <div class="db-loader" id="table-loader"><div class="db-spin"></div>Parsing database.sql…</div>
+        <div class="table-list" id="tableList"></div>
+      </div>
+
+      <!-- RIGHT: Main panel -->
+      <div>
+        <!-- Schema not yet selected -->
+        <div class="db-panel" id="selectPrompt">
+          <div class="db-empty">
+            <i class="bx bx-select-multiple"></i>
+            <p style="font-size:15px;font-weight:700;color:rgba(255,255,255,.55);">Select a table from the left</p>
+            <p style="margin-top:6px;">The form will auto-generate matching input fields for every attribute in the chosen table.</p>
+          </div>
+        </div>
+
+        <!-- Active table panel (hidden initially) -->
+        <div class="db-panel" id="activePanel" style="display:none;">
+          <div class="selected-table-header">
+            <div>
+              <div class="selected-table-name" id="activeTableName"></div>
+              <div class="selected-table-meta" id="activeTableMeta"></div>
+            </div>
+            <div class="db-btn-row">
+              <button class="db-btn db-btn-ghost" onclick="resetForm()" title="Clear form"><i class="bx bx-reset"></i></button>
+              <button class="db-btn db-btn-success" onclick="seedMockData()"><i class="bx bx-refresh"></i> Seed Sample Data</button>
+            </div>
+          </div>
+
+          <div class="db-tabs">
+            <div class="db-tab-pill active" onclick="switchTab('insert', this)"><i class="bx bx-plus"></i> Insert Record</div>
+            <div class="db-tab-pill" onclick="switchTab('view', this)"><i class="bx bx-table"></i> View Records</div>
+          </div>
+
+          <!-- INSERT tab -->
+          <div id="tab-insert">
+            <div id="formStatus" class="db-status"></div>
+            <form id="dynamicInsertForm" onsubmit="handleInsert(event)">
+              <div class="db-form-grid" id="dynamicFormGrid">
+                <!-- Auto-generated inputs -->
+              </div>
+              <div class="db-btn-row" style="margin-top:6px;">
+                <button type="submit" class="db-btn db-btn-primary"><i class="bx bx-send"></i> Insert Record</button>
+                <button type="button" class="db-btn db-btn-ghost" onclick="resetForm()"><i class="bx bx-x"></i> Clear</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- VIEW tab -->
+          <div id="tab-view" style="display:none;">
+            <div id="viewStatus" class="db-status"></div>
+            <div class="db-records-header">
+              <input class="db-rec-search" id="recordSearchInput" placeholder="🔍 Filter records..." oninput="filterRecords(this.value)">
+              <button class="db-btn db-btn-ghost" onclick="loadRecords()"><i class="bx bx-refresh"></i> Reload</button>
+            </div>
+            <div id="recordsArea">
+              <div class="db-empty"><i class="bx bx-data"></i><p>Click Reload or select a table to view records.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer></footer>
+  <script type="module" src="js/main.js"></script>
+  <script type="module">
+    import { supabase } from './js/supabaseClient.js';
+
+    // ─── Schema (parsed at runtime from database.sql) ────────────────────────────
+    let schema = {};          // { tableName: [ {name, type, fullDef} ] }
+    let activeTable = null;
+    let allRecords = [];
+
+    // ─── Parse database.sql ──────────────────────────────────────────────────────
+    async function parseSchema() {
+      try {
+        const res = await fetch('database.sql');
+        const sql = await res.text();
+        const tableRegex = /CREATE\s+TABLE\s+(\w+)\s*\(([\s\S]*?)\);/gi;
+        let match;
+        schema = {};
+
+        while ((match = tableRegex.exec(sql)) !== null) {
+          const tableName = match[1];
+          const body = match[2];
+          const cols = splitColumns(body);
+          const cleanCols = cols
+            .map(c => c.trim())
+            .filter(c => c && !/^(FOREIGN\s+KEY|PRIMARY\s+KEY|UNIQUE|CHECK|CONSTRAINT)\b/i.test(c))
+            .map(c => {
+              const parts = c.split(/\s+/);
+              return { name: parts[0], type: parts[1] || 'TEXT', fullDef: c };
+            });
+          schema[tableName] = cleanCols;
+        }
+      } catch (e) {
+        console.warn('Could not fetch database.sql, using embedded schema fallback.', e);
+        schema = getEmbeddedSchema();
+      }
+    }
+
+    function splitColumns(body) {
+      const cols = [];
+      let depth = 0, cur = [];
+      for (const ch of body) {
+        if (ch === '(') depth++;
+        else if (ch === ')') depth--;
+        if (ch === ',' && depth === 0) { cols.push(cur.join('')); cur = []; }
+        else cur.push(ch);
+      }
+      if (cur.length) cols.push(cur.join(''));
+      return cols;
+    }
+
+    // ─── Embedded schema fallback (key tables if SQL fetch fails) ──────────────
+    function getEmbeddedSchema() {
+      return {
+        students: [
+          {name:'student_id',type:'SERIAL'},{name:'register_no',type:'VARCHAR'},{name:'admission_no',type:'VARCHAR'},
+          {name:'roll_no',type:'VARCHAR'},{name:'first_name',type:'VARCHAR'},{name:'last_name',type:'VARCHAR'},
+          {name:'gender',type:'VARCHAR'},{name:'dob',type:'DATE'},{name:'blood_group',type:'VARCHAR'},
+          {name:'email',type:'VARCHAR'},{name:'phone',type:'VARCHAR'},{name:'alternate_phone',type:'VARCHAR'},
+          {name:'department_id',type:'INT'},{name:'course_id',type:'INT'},{name:'year',type:'INT'},
+          {name:'semester',type:'INT'},{name:'section',type:'VARCHAR'},{name:'batch',type:'VARCHAR'},
+          {name:'hostel_id',type:'INT'},{name:'bus_route_id',type:'INT'},{name:'library_card_no',type:'VARCHAR'},
+          {name:'profile_photo',type:'VARCHAR'},{name:'father_name',type:'VARCHAR'},{name:'mother_name',type:'VARCHAR'},
+          {name:'guardian_name',type:'VARCHAR'},{name:'guardian_phone',type:'VARCHAR'},{name:'address',type:'VARCHAR'},
+          {name:'city',type:'VARCHAR'},{name:'state',type:'VARCHAR'},{name:'pincode',type:'VARCHAR'},
+          {name:'admission_date',type:'DATE'},{name:'status',type:'VARCHAR'},{name:'password_hash',type:'VARCHAR'},
+          {name:'created_at',type:'TIMESTAMP'}
+        ],
+        student_login: [
+          {name:'login_id',type:'SERIAL'},{name:'student_id',type:'INT'},{name:'username',type:'VARCHAR'},
+          {name:'password_hash',type:'VARCHAR'},{name:'last_login',type:'TIMESTAMP'},{name:'account_status',type:'VARCHAR'},
+          {name:'otp_enabled',type:'INTEGER'}
+        ]
+      };
+    }
+
+    // ─── Render table list ────────────────────────────────────────────────────
+    function renderTableList(filter = '') {
+      const list = document.getElementById('tableList');
+      const lower = filter.toLowerCase();
+      const names = Object.keys(schema).filter(n => n.toLowerCase().includes(lower));
+
+      if (!names.length) {
+        list.innerHTML = '<div class="db-empty" style="padding:20px 0;"><p>No tables match.</p></div>';
+        return;
+      }
+
+      list.innerHTML = names.map(name => {
+        const cols = schema[name].length;
+        const isActive = name === activeTable ? 'active' : '';
+        return `<div class="table-item ${isActive}" onclick="selectTable('${name}')">
+          <span>${name}</span>
+          <span class="col-count">${cols}</span>
+        </div>`;
+      }).join('');
+    }
+
+    window.filterTables = (v) => renderTableList(v);
+
+    // ─── Select a table ────────────────────────────────────────────────────────
+    window.selectTable = (name) => {
+      activeTable = name;
+      document.getElementById('selectPrompt').style.display = 'none';
+      document.getElementById('activePanel').style.display = 'block';
+
+      const cols = schema[name];
+      document.getElementById('activeTableName').textContent = name;
+      document.getElementById('activeTableMeta').textContent = `${cols.length} attributes — Click a column header to filter`;
+      renderTableList(document.getElementById('tableSearchInput').value);
+      generateForm(name, cols);
+      document.getElementById('formStatus').style.display = 'none';
+    };
+
+    // ─── Generate dynamic form ─────────────────────────────────────────────────
+    function generateForm(table, cols) {
+      const grid = document.getElementById('dynamicFormGrid');
+      const skip = new Set(['SERIAL', 'TIMESTAMP']);
+      const isSerial = (c) => c.type.toUpperCase().startsWith('SERIAL') || c.name.endsWith('_id');
+      const isDate = (c) => ['DATE','TIMESTAMP'].includes(c.type.toUpperCase());
+      const isNum = (c) => ['INT','INTEGER','DECIMAL','NUMERIC','FLOAT','BIGINT'].some(t => c.type.toUpperCase().startsWith(t));
+      const isText = (c) => ['TEXT','LONGTEXT'].includes(c.type.toUpperCase());
+
+      grid.innerHTML = cols.map(col => {
+        // Skip auto-gen PKs
+        if (col.type.toUpperCase() === 'SERIAL') return '';
+
+        let inputHtml;
+        if (isText(col)) {
+          inputHtml = `<textarea id="field_${col.name}" name="${col.name}" class="db-form-input" placeholder="Enter ${col.name}"></textarea>`;
+        } else if (isDate(col)) {
+          const type = col.type.toUpperCase() === 'DATE' ? 'date' : 'datetime-local';
+          inputHtml = `<input type="${type}" id="field_${col.name}" name="${col.name}" class="db-form-input">`;
+        } else if (isNum(col)) {
+          inputHtml = `<input type="number" step="any" id="field_${col.name}" name="${col.name}" class="db-form-input" placeholder="0">`;
+        } else {
+          inputHtml = `<input type="text" id="field_${col.name}" name="${col.name}" class="db-form-input" placeholder="Enter ${col.name}">`;
+        }
+
+        return `<div class="db-form-group">
+          <label for="field_${col.name}">${col.name.replace(/_/g,' ')}</label>
+          ${inputHtml}
+        </div>`;
+      }).join('');
+    }
+
+    // ─── Handle insert ─────────────────────────────────────────────────────────
+    window.handleInsert = async (e) => {
+      e.preventDefault();
+      const statusEl = document.getElementById('formStatus');
+      const payload = {};
+      const cols = schema[activeTable];
+
+      cols.forEach(col => {
+        if (col.type.toUpperCase() === 'SERIAL') return;
+        const el = document.getElementById('field_' + col.name);
+        if (!el) return;
+        const v = el.value.trim();
+        if (v === '') { payload[col.name] = null; return; }
+        const isNum = ['INT','INTEGER','DECIMAL','NUMERIC','FLOAT','BIGINT'].some(t => col.type.toUpperCase().startsWith(t));
+        payload[col.name] = isNum ? Number(v) : v;
+      });
+
+      // Try Supabase insert
+      try {
+        const { data, error } = await supabase.from(activeTable).insert([payload]).select();
+        if (error) {
+          showStatus('formStatus', `Supabase error: ${error.message}`, 'error');
+        } else {
+          showStatus('formStatus', `Record inserted into "${activeTable}" successfully!`, 'success');
+          document.getElementById('dynamicInsertForm').reset();
+        }
+      } catch (err) {
+        // LocalStorage mock fallback
+        try {
+          const key = 'mock_' + activeTable;
+          const existing = JSON.parse(localStorage.getItem(key) || '[]');
+          payload._id = Date.now();
+          existing.push(payload);
+          localStorage.setItem(key, JSON.stringify(existing));
+          showStatus('formStatus', `[Offline] Record saved to localStorage (Supabase unavailable).`, 'info');
+          document.getElementById('dynamicInsertForm').reset();
+        } catch (le) {
+          showStatus('formStatus', 'Insert failed: ' + le.message, 'error');
+        }
+      }
+    };
+
+    // ─── Load records ──────────────────────────────────────────────────────────
+    window.loadRecords = async () => {
+      const area = document.getElementById('recordsArea');
+      area.innerHTML = '<div class="db-loader"><div class="db-spin"></div>Loading records…</div>';
+
+      try {
+        const { data, error } = await supabase.from(activeTable).select('*').limit(50);
+        if (error) throw new Error(error.message);
+        allRecords = data || [];
+      } catch (e) {
+        // LocalStorage fallback
+        const key = 'mock_' + activeTable;
+        allRecords = JSON.parse(localStorage.getItem(key) || '[]');
+        if (!allRecords.length) {
+          showStatus('viewStatus', 'Supabase unavailable — no local records found. Use "Seed Sample Data" to populate.', 'info');
+        }
+      }
+
+      renderRecords(allRecords);
+    };
+
+    window.filterRecords = (v) => {
+      const lower = v.toLowerCase();
+      const filtered = allRecords.filter(row =>
+        Object.values(row).some(val => String(val).toLowerCase().includes(lower))
+      );
+      renderRecords(filtered);
+    };
+
+    function renderRecords(rows) {
+      const area = document.getElementById('recordsArea');
+      if (!rows.length) {
+        area.innerHTML = '<div class="db-empty"><i class="bx bx-data"></i><p>No records found. Try seeding or inserting data.</p></div>';
+        return;
+      }
+
+      const headers = Object.keys(rows[0]);
+      area.innerHTML = `<div class="db-table-wrap">
+        <table class="db-data-table">
+          <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}<th></th></tr></thead>
+          <tbody>
+            ${rows.map((row, i) => `<tr>
+              ${headers.map(h => `<td title="${String(row[h] ?? '')}">${row[h] ?? '—'}</td>`).join('')}
+              <td><button class="del-btn" onclick="deleteRecord(${i})" title="Delete"><i class="bx bx-trash"></i></button></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    }
+
+    window.deleteRecord = async (idx) => {
+      const row = allRecords[idx];
+      if (!row) return;
+      const pkField = Object.keys(row).find(k => k.endsWith('_id')) || Object.keys(row)[0];
+      const pkVal = row[pkField];
+
+      try {
+        const { error } = await supabase.from(activeTable).delete().eq(pkField, pkVal);
+        if (error) throw new Error(error.message);
+      } catch {
+        // LocalStorage fallback
+        const key = 'mock_' + activeTable;
+        const stored = JSON.parse(localStorage.getItem(key) || '[]');
+        const filtered = stored.filter(r => r[pkField] !== pkVal);
+        localStorage.setItem(key, JSON.stringify(filtered));
+      }
+
+      allRecords.splice(idx, 1);
+      renderRecords(allRecords);
+    };
+
+    // ─── Seed sample data ──────────────────────────────────────────────────────
+    window.seedMockData = () => {
+      if (!activeTable) return;
+      const key = 'mock_' + activeTable;
+      const cols = schema[activeTable];
+      const sampleRows = [];
+      for (let i = 1; i <= 10; i++) {
+        const row = {};
+        cols.forEach(col => {
+          if (col.type.toUpperCase() === 'SERIAL') return;
+          const n = col.name;
+          if (n.endsWith('_id')) { row[n] = i; }
+          else if (['DATE'].includes(col.type.toUpperCase())) { row[n] = `2026-07-${String(i).padStart(2,'0')}`; }
+          else if (['TIMESTAMP'].includes(col.type.toUpperCase())) { row[n] = new Date().toISOString(); }
+          else if (['INT','INTEGER'].some(t => col.type.toUpperCase().startsWith(t))) { row[n] = i; }
+          else if (['DECIMAL','NUMERIC','FLOAT'].some(t => col.type.toUpperCase().startsWith(t))) { row[n] = (i * 10.5).toFixed(2); }
+          else { row[n] = `sample_${n}_${i}`; }
+        });
+        sampleRows.push(row);
+      }
+      localStorage.setItem(key, JSON.stringify(sampleRows));
+      showStatus('viewStatus', `Seeded 10 sample records into "${activeTable}" (offline storage).`, 'success');
+      allRecords = sampleRows;
+      renderRecords(sampleRows);
+    };
+
+    // ─── Tab switching ─────────────────────────────────────────────────────────
+    window.switchTab = (tab, el) => {
+      document.querySelectorAll('.db-tab-pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('tab-insert').style.display = tab === 'insert' ? '' : 'none';
+      document.getElementById('tab-view').style.display = tab === 'view' ? '' : 'none';
+      if (tab === 'view' && activeTable) loadRecords();
+    };
+
+    window.resetForm = () => {
+      document.getElementById('dynamicInsertForm').reset();
+      document.getElementById('formStatus').style.display = 'none';
+    };
+
+    // ─── Status helper ─────────────────────────────────────────────────────────
+    function showStatus(id, msg, type) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = msg; el.className = `db-status ${type}`; el.style.display = 'block';
+      setTimeout(() => { el.style.display = 'none'; }, 6000);
+    }
+
+    // ─── Init ──────────────────────────────────────────────────────────────────
+    async function init() {
+      await parseSchema();
+      const names = Object.keys(schema);
+      const totalCols = names.reduce((s, n) => s + schema[n].length, 0);
+
+      // Animate metrics
+      document.getElementById('metric-tables').textContent = names.length;
+      document.getElementById('metric-cols').textContent = totalCols;
+      document.getElementById('metric-avg').textContent = Math.round(totalCols / names.length);
+
+      document.getElementById('table-loader').style.display = 'none';
+      renderTableList();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saranathan College Central Library | Digital Book Stack</title>
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+
+  <!-- Page Loader -->
+  <div class="preloader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">INDEXING CENTRAL LIBRARY CATALOG</div>
+  </div>
+
+  <canvas class="particle-canvas"></canvas>
+  <div class="circle-glow"></div>
+
+  <!-- Header -->
+  <header></header>
+
+  <main class="container" style="min-height: 85vh; padding-bottom: 60px;">
+    
+    <!-- Title Banner -->
+    <section class="animate-slide-up" style="margin-bottom: 30px; text-align: center;">
+      <h1 style="font-family: var(--font-title); font-size: 2.6rem; font-weight: 800;">
+        Saranathan Central Library Stack
+      </h1>
+      <p style="color: var(--text-secondary); margin-top: 8px; font-size: 15px;">
+        Browse 50+ engineering textbooks, reference handbooks, research journals, and check physical floor/rack locations.
+      </p>
+    </section>
+
+    <!-- Search & Filter Bar -->
+    <section class="animate-slide-up delay-1" style="max-width: 900px; margin: 0 auto 30px;">
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <div style="flex: 1; position: relative; min-width: 280px;">
+          <i class="bx bx-search" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 20px;"></i>
+          <input type="text" id="lib-search-input" class="form-input" style="padding-left: 48px; font-size: 15px; height: 50px; border-radius: 12px;" placeholder="Search by title, author, subject, or ISBN...">
+        </div>
+        <select id="lib-category-select" class="form-input" style="width: 220px; height: 50px; border-radius: 12px; font-size: 14px;">
+          <option value="ALL">All Categories</option>
+          <option value="Computer Science">Computer Science</option>
+          <option value="Mechanical Engineering">Mechanical Engineering</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Control Systems">Control Systems</option>
+          <option value="Robotics">Robotics & AI</option>
+          <option value="Operating Systems">Operating Systems</option>
+          <option value="Physics">Physics & Math</option>
+        </select>
+      </div>
+
+      <!-- Quick Category Chips -->
+      <div id="category-chips" style="display: flex; gap: 8px; overflow-x: auto; padding: 15px 0 5px; scrollbar-width: none;">
+        <button class="chip-btn active" data-cat="ALL">All Books (58)</button>
+        <button class="chip-btn" data-cat="Computer Science">Computer Science</button>
+        <button class="chip-btn" data-cat="Mechanical Engineering">Mechanical</button>
+        <button class="chip-btn" data-cat="Electronics">Electronics</button>
+        <button class="chip-btn" data-cat="Robotics">Robotics</button>
+        <button class="chip-btn" data-cat="Control Systems">Control Systems</button>
+        <button class="chip-btn" data-cat="Artificial Intelligence">AI & ML</button>
+      </div>
+    </section>
+
+    <!-- Catalog Counter -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;" class="animate-fade-in delay-2">
+      <span style="font-size: 14px; color: var(--text-secondary);" id="catalog-counter-text">Showing all books</span>
+      <span style="font-size: 12px; color: var(--text-muted);"><i class="bx bx-grid-alt"></i> Compact Grid View (4–6 Columns)</span>
+    </div>
+
+    <!-- 4–6 Column Compact Books Grid -->
+    <section class="library-grid animate-fade-in delay-2" id="books-grid-container">
+      <!-- Loaded dynamically -->
+    </section>
+
+  </main>
+
+  <!-- Book Details Modal Dialog -->
+  <div class="modal-overlay" id="book-modal">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="modal-close"><i class="bx bx-x"></i></button>
+      <div style="display: flex; gap: 25px; flex-wrap: wrap;" id="modal-body-content">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <footer></footer>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+  <script src="js/library-catalog.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initCompactLibraryGrid();
+    });
+
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      if (typeof str !== 'string') return String(str);
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    function initCompactLibraryGrid() {
+      const searchInput = document.getElementById('lib-search-input');
+      const categorySelect = document.getElementById('lib-category-select');
+      const gridContainer = document.getElementById('books-grid-container');
+      const counterText = document.getElementById('catalog-counter-text');
+      const chips = document.querySelectorAll('.chip-btn');
+      const modal = document.getElementById('book-modal');
+      const modalClose = document.getElementById('modal-close');
+      const modalBody = document.getElementById('modal-body-content');
+
+      let currentQuery = '';
+      let currentCategory = 'ALL';
+
+      const renderBooks = () => {
+        if (!window.BOOKS_CATALOG || !gridContainer) return;
+
+        const filtered = window.BOOKS_CATALOG.filter(book => {
+          const matchesQuery = !currentQuery || 
+            book.title.toLowerCase().includes(currentQuery.toLowerCase()) ||
+            book.author.toLowerCase().includes(currentQuery.toLowerCase()) ||
+            book.category.toLowerCase().includes(currentQuery.toLowerCase()) ||
+            book.isbn.includes(currentQuery);
+
+          const matchesCat = currentCategory === 'ALL' || 
+            book.category.toLowerCase() === currentCategory.toLowerCase() ||
+            (currentCategory === 'Robotics' && (book.category.includes('Robotics') || book.category.includes('Mechatronics'))) ||
+            (currentCategory === 'Artificial Intelligence' && (book.category.includes('Artificial Intelligence') || book.category.includes('Cyber')));
+
+          return matchesQuery && matchesCat;
+        });
+
+        counterText.innerHTML = `Showing <strong>${filtered.length}</strong> of <strong>${window.BOOKS_CATALOG.length}</strong> catalog books`;
+
+        if (filtered.length === 0) {
+          gridContainer.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; background: var(--bg-glass); border-radius: 16px; border: 1px dashed var(--border-glass);">
+              <i class="bx bx-book-search" style="font-size: 50px; color: var(--text-muted); margin-bottom: 12px;"></i>
+              <h3 style="color: var(--text-primary); font-size: 18px;">No matching books found</h3>
+              <p style="color: var(--text-secondary); font-size: 14px; margin-top: 5px;">Try tweaking your search term or select another category filter.</p>
+            </div>
+          `;
+          return;
+        }
+
+        gridContainer.innerHTML = filtered.map(book => {
+          const coverUrl = `BOOKS IMAGES/${encodeURIComponent(book.image)}`;
+          return `
+            <div class="book-card-compact" onclick="openBookModal(${book.id})">
+              <div class="book-cover-container">
+                <img class="book-cover-img" src="${coverUrl}" alt="${escapeHTML(book.title)}" loading="lazy" onerror="this.onerror=null; this.src='poster.png';">
+              </div>
+              <div>
+                <span class="book-meta-tag">${escapeHTML(book.category)}</span>
+                <h4 class="book-title-compact">${escapeHTML(book.title)}</h4>
+                <p class="book-author-compact">${escapeHTML(book.author)}</p>
+                <div style="margin-top: 8px; font-size: 10px; color: var(--text-muted); display: flex; justify-content: space-between;">
+                  <span><i class="bx bx-map-pin"></i> ${escapeHTML(book.floor)}</span>
+                  <span style="color: var(--color-secondary); font-weight: 700;">${book.availableCopies} Copies</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      };
+
+      // Search event handlers
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          currentQuery = e.target.value.trim();
+          renderBooks();
+        });
+      }
+
+      if (categorySelect) {
+        categorySelect.addEventListener('change', (e) => {
+          currentCategory = e.target.value;
+          updateActiveChip(currentCategory);
+          renderBooks();
+        });
+      }
+
+      // Chip filters
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          chips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          currentCategory = chip.getAttribute('data-cat');
+          if (categorySelect) categorySelect.value = currentCategory;
+          renderBooks();
+        });
+      });
+
+      function updateActiveChip(cat) {
+        chips.forEach(chip => {
+          if (chip.getAttribute('data-cat') === cat) {
+            chip.classList.add('active');
+          } else {
+            chip.classList.remove('active');
+          }
+        });
+      }
+
+      // Modal functions
+      window.openBookModal = (bookId) => {
+        const book = window.BOOKS_CATALOG.find(b => b.id === bookId);
+        if (!book || !modal || !modalBody) return;
+
+        const coverUrl = `BOOKS IMAGES/${encodeURIComponent(book.image)}`;
+        modalBody.innerHTML = `
+          <div style="width: 200px; flex-shrink: 0; margin: 0 auto;">
+            <img src="${coverUrl}" alt="${escapeHTML(book.title)}" style="width: 100%; height: 280px; object-fit: cover; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+          </div>
+          <div style="flex: 1; min-width: 260px;">
+            <span class="profile-role-tag" style="background: rgba(59,130,246,0.15); color: var(--color-primary);">${escapeHTML(book.category)}</span>
+            <h2 style="font-family: var(--font-title); font-size: 22px; font-weight: 700; color: var(--text-primary); margin-top: 10px;">${escapeHTML(book.title)}</h2>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">Author: <strong>${escapeHTML(book.author)}</strong></p>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">ISBN: ${escapeHTML(book.isbn)}</p>
+
+            <div style="margin-top: 20px; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 12px; padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px;">
+              <div><i class="bx bx-layer" style="color:var(--color-primary);"></i> Floor: <strong>${escapeHTML(book.floor)}</strong></div>
+              <div><i class="bx bx-grid-alt" style="color:var(--color-primary);"></i> Rack: <strong>${escapeHTML(book.rack)}</strong></div>
+              <div><i class="bx bx-bookmark" style="color:var(--color-primary);"></i> Shelf: <strong>${escapeHTML(book.shelf)}</strong></div>
+              <div><i class="bx bx-check-circle" style="color:var(--color-secondary);"></i> Stock: <strong>${book.availableCopies} of ${book.copies} available</strong></div>
+            </div>
+
+            <div style="margin-top: 25px; display: flex; gap: 12px;">
+              <button class="btn-login-nav" style="flex: 1; padding: 12px;" onclick="window.location.href='login.html'">
+                <i class="bx bx-lock-alt"></i> Login to Reserve Copy
+              </button>
+              <button class="ripple-btn" style="padding: 12px 20px; background: var(--bg-glass); border: 1px solid var(--border-glass); color: var(--text-primary); border-radius: 8px; cursor: pointer;" onclick="document.getElementById('book-modal').classList.remove('active')">
+                Close
+              </button>
+            </div>
+          </div>
+        `;
+        modal.classList.add('active');
+      };
+
+      if (modalClose) {
+        modalClose.addEventListener('click', () => {
+          modal.classList.remove('active');
+        });
+      }
+
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
+      }
+
+      // Initial render
+      renderBooks();
+    }
+  </script>
+
+  <style>
+    .chip-btn {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .chip-btn:hover, .chip-btn.active {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+  </style>
+</body>
+</html>

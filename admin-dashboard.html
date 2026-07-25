@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin System Control Desk | Saranathan College</title>
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <!-- Chart.js CDN for analytics graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Page Loader -->
+  <div class="preloader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">INITIALIZING ADMINISTRATIVE DESK</div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="nav-container">
+      <div class="logo-area" onclick="window.location.href='index.html'">
+        <div class="college-logo-img">S</div>
+        <span class="logo-title">Saranathan College</span>
+      </div>
+      <div class="nav-right">
+        <button class="theme-toggle" id="theme-toggle-btn" aria-label="Toggle Theme">
+          <i class="bx bx-moon" id="theme-icon"></i>
+        </button>
+        <button class="btn-login-nav" onclick="sessionStorage.clear(); window.location.href='login.html'">Logout</button>
+        <button class="menu-btn" aria-label="Toggle Sidebar">
+          <i class="bx bx-menu"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard-container">
+    
+    <!-- Left Sidebar Menu -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-profile">
+        <div class="profile-avatar-wrapper">
+          <div class="college-logo-img profile-avatar" style="width:100%; height:100%; font-size:32px; background:linear-gradient(135deg, var(--color-accent), var(--color-danger));">A</div>
+          <span class="profile-status-dot" style="background-color: var(--color-secondary);"></span>
+        </div>
+        <h4 class="profile-name">Super Admin</h4>
+        <span class="profile-role-tag" style="background:rgba(139,92,246,0.15); color:var(--color-accent);">Admin</span>
+        <span style="font-size:11px; color:var(--text-muted); margin-top:4px;">saranathan.admin</span>
+      </div>
+
+      <nav style="display:flex; flex-direction:column; gap:5px; flex:1;">
+        <div class="sidebar-link active" data-tab="tab-analytics"><i class="bx bx-bar-chart-alt-2"></i> System Analytics</div>
+        <div class="sidebar-link" data-tab="tab-manage-students"><i class="bx bx-user-voice"></i> Manage Students</div>
+        <div class="sidebar-link" data-tab="tab-manage-staff"><i class="bx bx-id-card"></i> Manage Staff</div>
+        
+        <a class="sidebar-link" href="database-control.html" style="text-decoration:none;"><i class="bx bx-data"></i> Database Control</a>
+        <a class="sidebar-link" href="edit/timetable.html" style="text-decoration:none;"><i class="bx bx-calendar-plus"></i> Timetable Generator</a>
+        <div class="sidebar-link logout-btn"><i class="bx bx-log-out"></i> Sign Out</div>
+      </nav>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="dashboard-content">
+      
+      <!-- 1. SYSTEM ANALYTICS TAB -->
+      <div id="tab-analytics" class="dashboard-tab-panel active">
+        <div class="dashboard-section-header">
+          <div>
+            <h2>Campus Analytics & Infrastructure Monitor</h2>
+            <p style="font-size:12px; color:var(--text-secondary); margin-top:3px;">Real-time database indices, college growth stats, and system health overview</p>
+          </div>
+        </div>
+
+        <!-- Metrics cards -->
+        <div class="dashboard-metrics-grid">
+          <div class="glass-card metric-card">
+            <div class="metric-info">
+              <h3>Students Registered</h3>
+              <p id="admin-metric-students">0</p>
+              <span style="font-size:11px; color:var(--text-muted);">Across all departments & batches</span>
+            </div>
+            <div class="metric-icon-box metric-blue"><i class="bx bx-group"></i></div>
+          </div>
+          <div class="glass-card metric-card">
+            <div class="metric-info">
+              <h3>Faculty Count</h3>
+              <p id="admin-metric-staff">0</p>
+              <span style="font-size:11px; color:var(--text-muted);">Teaching & administrative staff</span>
+            </div>
+            <div class="metric-icon-box metric-green"><i class="bx bx-user-check"></i></div>
+          </div>
+          <div class="glass-card metric-card">
+            <div class="metric-info">
+              <h3>Library Books</h3>
+              <p id="admin-metric-books">0</p>
+              <span style="font-size:11px; color:var(--text-muted);">Total catalog entries</span>
+            </div>
+            <div class="metric-icon-box metric-purple"><i class="bx bx-book"></i></div>
+          </div>
+          <div class="glass-card metric-card">
+            <div class="metric-info">
+              <h3>System Notices</h3>
+              <p id="admin-metric-notices">0</p>
+              <span style="font-size:11px; color:var(--text-muted);">Active announcements</span>
+            </div>
+            <div class="metric-icon-box" style="background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.2);"><i class="bx bx-news"></i></div>
+          </div>
+          <div class="glass-card metric-card">
+            <div class="metric-info">
+              <h3>Pending Approvals</h3>
+              <p id="admin-metric-pending">0</p>
+              <span style="font-size:11px; color:var(--text-muted);">Awaiting staff verification</span>
+            </div>
+            <div class="metric-icon-box" style="background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.2);"><i class="bx bx-time"></i></div>
+          </div>
+          <div class="glass-card metric-card">
+            <div class="metric-info">
+              <h3>Total Departments</h3>
+              <p id="admin-metric-depts">6</p>
+              <span style="font-size:11px; color:var(--text-muted);">CSE, ECE, EEE, MECH, CIVIL, MBA</span>
+            </div>
+            <div class="metric-icon-box metric-blue"><i class="bx bx-buildings"></i></div>
+          </div>
+        </div>
+
+        <!-- Quick Admin Actions -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom:30px;">
+          <div class="glass-card" style="padding:18px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="document.querySelector('[data-tab=tab-manage-students]').click()">
+            <div style="width:40px; height:40px; border-radius:10px; background:rgba(59,130,246,0.15); display:flex; align-items:center; justify-content:center;">
+              <i class="bx bx-user-voice" style="font-size:22px; color:var(--color-primary);"></i>
+            </div>
+            <div>
+              <h4 style="font-size:13px; font-weight:700;">Manage Students</h4>
+              <p style="font-size:11px; color:var(--text-muted);">View & verify enrollments</p>
+            </div>
+          </div>
+          <div class="glass-card" style="padding:18px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="document.querySelector('[data-tab=tab-manage-staff]').click()">
+            <div style="width:40px; height:40px; border-radius:10px; background:rgba(16,185,129,0.15); display:flex; align-items:center; justify-content:center;">
+              <i class="bx bx-id-card" style="font-size:22px; color:var(--color-secondary);"></i>
+            </div>
+            <div>
+              <h4 style="font-size:13px; font-weight:700;">Manage Staff</h4>
+              <p style="font-size:11px; color:var(--text-muted);">Faculty & cabin details</p>
+            </div>
+          </div>
+          <div class="glass-card" style="padding:18px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="window.location.href='database-control.html'">
+            <div style="width:40px; height:40px; border-radius:10px; background:rgba(139,92,246,0.15); display:flex; align-items:center; justify-content:center;">
+              <i class="bx bx-data" style="font-size:22px; color:var(--color-accent);"></i>
+            </div>
+            <div>
+              <h4 style="font-size:13px; font-weight:700;">Database Control</h4>
+              <p style="font-size:11px; color:var(--text-muted);">Backup & manage records</p>
+            </div>
+          </div>
+          <div class="glass-card" style="padding:18px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="window.location.href='edit/timetable.html'">
+            <div style="width:40px; height:40px; border-radius:10px; background:rgba(245,158,11,0.15); display:flex; align-items:center; justify-content:center;">
+              <i class="bx bx-calendar-plus" style="font-size:22px; color:#f59e0b;"></i>
+            </div>
+            <div>
+              <h4 style="font-size:13px; font-weight:700;">Timetable</h4>
+              <p style="font-size:11px; color:var(--text-muted);">Edit lecture schedules</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Overview Cards Row -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:25px; margin-bottom:30px;">
+          <!-- College Stats -->
+          <div class="glass-card" style="padding:20px;">
+            <h3 style="font-family:var(--font-title); font-size:15px; font-weight:700; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+              <i class="bx bx-building-house" style="color:var(--color-primary);"></i> College Infrastructure Summary
+            </h3>
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:12px; color:var(--text-secondary);">
+              <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Total Students</span>
+                <strong style="color:var(--text-primary);" id="admin-stat-total-students">2,400+</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Total Faculty</span>
+                <strong style="color:var(--text-primary);" id="admin-stat-total-faculty">120+</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Laboratories</span>
+                <strong style="color:var(--text-primary);">25 Labs</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Library Capacity</span>
+                <strong style="color:var(--text-primary);">500+ Seats</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Bus Routes</span>
+                <strong style="color:var(--text-primary);">12 Routes</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:6px 0;">
+                <span>Hostel Capacity</span>
+                <strong style="color:var(--text-primary);">1,200 Beds</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- System Status -->
+          <div class="glass-card" style="padding:20px; border-color:var(--color-secondary-glow);">
+            <h3 style="font-family:var(--font-title); font-size:15px; font-weight:700; color:var(--color-secondary); margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+              <i class="bx bx-server" style="color:var(--color-secondary);"></i> Portal System Status
+            </h3>
+            <div style="display:flex; flex-direction:column; gap:10px; font-size:12px;">
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Database Connection</span>
+                <span style="color:var(--color-secondary); font-weight:600;"><i class="bx bx-check-circle"></i> Connected</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Authentication Service</span>
+                <span style="color:var(--color-secondary); font-weight:600;"><i class="bx bx-check-circle"></i> Operational</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Library API</span>
+                <span style="color:var(--color-secondary); font-weight:600;"><i class="bx bx-check-circle"></i> Online</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Last Backup</span>
+                <span style="color:var(--text-primary); font-weight:600;">Today, 03:00 AM</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-glass);">
+                <span>Active Sessions</span>
+                <span style="color:var(--color-primary); font-weight:600;" id="admin-stat-active-sessions">24</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0;">
+                <span>Storage Used</span>
+                <span style="color:var(--text-primary); font-weight:600;">2.4 GB / 10 GB</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytical Graph Card -->
+        <div class="glass-card" style="padding:25px; margin-bottom:30px;">
+          <h3 style="font-family:var(--font-title); font-size:16px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+            <i class="bx bx-pulse" style="color:var(--color-primary);"></i> System Data Breakdown — Department-wise Distribution
+          </h3>
+          <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Visual representation of student and staff distribution across departments, library catalog size, and system activity.</p>
+          <div style="height:320px; position:relative;">
+            <canvas id="admin-analytics-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. MANAGE STUDENTS TAB -->
+      <div id="tab-manage-students" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>Manage Student Roster</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">Verify status, departments, and enrollment details</p>
+        </div>
+
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Roll Number</th>
+                <th>Student Name</th>
+                <th>Department</th>
+                <th>Batch Year</th>
+                <th>Registered Email</th>
+                <th>Portal Status</th>
+              </tr>
+            </thead>
+            <tbody id="admin-students-tbody">
+              <!-- Dynamically filled -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3. MANAGE STAFF TAB -->
+      <div id="tab-manage-staff" class="dashboard-tab-panel">
+        <div class="dashboard-section-header">
+          <h2>Manage Faculty Roster</h2>
+          <p style="font-size:12px; color:var(--text-secondary);">Verify offices, cabins, and logins</p>
+        </div>
+
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Faculty Name</th>
+                <th>Department Office</th>
+                <th>Allocated Cabin</th>
+                <th>Official Email</th>
+              </tr>
+            </thead>
+            <tbody id="admin-staff-tbody">
+              <!-- Dynamically filled -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>
+

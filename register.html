@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Admission Registration | Saranathan College</title>
+  <meta name="description" content="Register as a new student at Saranathan College. Complete all required academic, personal, and family details.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    :root{--reg-accent:#7c6fff;--reg-accent2:#56cfb2;--reg-danger:#ff5c7c;--reg-success:#3ecf8e}
+    .reg-wrapper{width:100%;max-width:920px;margin:0 auto;padding:120px 16px 60px}
+    .reg-card{background:rgba(18,18,35,0.72);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(124,111,255,0.22);border-radius:20px;padding:40px;box-shadow:0 24px 64px rgba(0,0,0,0.5);animation:fadeScaleIn .5s ease both}
+    @keyframes fadeScaleIn{from{opacity:0;transform:scale(.97) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .reg-header{display:flex;align-items:center;gap:16px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid rgba(124,111,255,0.18)}
+    .reg-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--reg-accent),var(--reg-accent2));display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;box-shadow:0 8px 24px rgba(124,111,255,0.4);flex-shrink:0}
+    .reg-header-text h1{font-family:'Outfit',sans-serif;font-size:22px;font-weight:800;background:linear-gradient(90deg,#fff 0%,var(--reg-accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 4px}
+    .reg-header-text p{font-size:12.5px;color:rgba(255,255,255,0.5);margin:0}
+    .step-bar{display:flex;align-items:center;margin-bottom:32px;overflow-x:auto;scrollbar-width:none}
+    .step-bar::-webkit-scrollbar{display:none}
+    .step-item{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;position:relative}
+    .step-item:not(:last-child)::after{content:'';position:absolute;top:17px;left:calc(50% + 18px);width:calc(100% - 36px);height:2px;background:rgba(255,255,255,0.1);transition:background .4s}
+    .step-item.done:not(:last-child)::after{background:var(--reg-accent2)}
+    .step-num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);border:2px solid rgba(255,255,255,0.1);transition:all .35s ease;z-index:1}
+    .step-item.active .step-num{background:var(--reg-accent);color:#fff;border-color:var(--reg-accent);box-shadow:0 0 18px rgba(124,111,255,0.55)}
+    .step-item.done .step-num{background:var(--reg-accent2);color:#fff;border-color:var(--reg-accent2)}
+    .step-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.35);text-align:center;white-space:nowrap;text-transform:uppercase;letter-spacing:.5px;transition:color .3s}
+    .step-item.active .step-label,.step-item.done .step-label{color:rgba(255,255,255,0.75)}
+    .sec-title{font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--reg-accent);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px 22px;margin-bottom:20px}
+    .form-grid.cols3{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+    .form-grid.cols1{grid-template-columns:1fr}
+    .form-group{display:flex;flex-direction:column;gap:6px}
+    .form-group label{font-size:11.5px;font-weight:600;color:rgba(255,255,255,0.6);letter-spacing:.3px;text-transform:uppercase}
+    .form-group label .req{color:var(--reg-danger);margin-left:2px}
+    .form-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 14px;font-size:13.5px;color:#fff;font-family:'Inter',sans-serif;transition:border-color .25s,box-shadow .25s;box-sizing:border-box;outline:none;-webkit-appearance:none}
+    .form-input:focus{border-color:var(--reg-accent);background:rgba(124,111,255,0.07);box-shadow:0 0 0 3px rgba(124,111,255,0.2)}
+    .form-input::placeholder{color:rgba(255,255,255,0.2)}
+    select.form-input{cursor:pointer}
+    select.form-input option{background:#1a1a2e;color:#fff}
+    .check-group{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:13px 16px;cursor:pointer;transition:background .2s,border-color .2s}
+    .check-group:hover{background:rgba(124,111,255,0.1);border-color:var(--reg-accent)}
+    .check-group input[type="checkbox"]{width:18px;height:18px;accent-color:var(--reg-accent);cursor:pointer}
+    .check-group label{font-size:13px;font-weight:500;color:rgba(255,255,255,0.7);cursor:pointer;margin:0}
+    .form-divider{height:1px;background:rgba(255,255,255,0.07);margin:22px 0}
+    .step-panel{display:none}
+    .step-panel.active{display:block;animation:stepFadeIn .4s ease both}
+    @keyframes stepFadeIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+    .reg-nav{display:flex;justify-content:space-between;align-items:center;margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.07)}
+    .btn-back{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);padding:11px 26px;border-radius:10px;font-size:13.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;font-family:'Inter',sans-serif}
+    .btn-back:hover{background:rgba(255,255,255,0.12);color:#fff}
+    .btn-next{background:linear-gradient(135deg,var(--reg-accent),#a78bfa);color:#fff;padding:11px 32px;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;border:none;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(124,111,255,0.4);transition:transform .2s,box-shadow .2s;font-family:'Inter',sans-serif}
+    .btn-next:hover{transform:translateY(-1px);box-shadow:0 12px 32px rgba(124,111,255,0.5)}
+    .btn-submit{background:linear-gradient(135deg,var(--reg-accent2),#38bdf8);color:#fff;padding:11px 36px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(86,207,178,0.4);transition:transform .2s,box-shadow .2s;font-family:'Inter',sans-serif}
+    .btn-submit:hover{transform:translateY(-1px);box-shadow:0 12px 32px rgba(86,207,178,0.5)}
+    .status-msg{display:none;padding:14px 18px;border-radius:10px;font-size:13.5px;font-weight:500;margin-bottom:20px;border:1px solid transparent}
+    .status-msg.success{background:rgba(62,207,142,0.12);border-color:var(--reg-success);color:var(--reg-success)}
+    .status-msg.error{background:rgba(255,92,124,0.12);border-color:var(--reg-danger);color:var(--reg-danger)}
+    .progress-bar-wrap{height:3px;background:rgba(255,255,255,0.07);border-radius:99px;margin-bottom:28px;overflow:hidden}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--reg-accent),var(--reg-accent2));border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+    .step-counter{font-size:11.5px;color:rgba(255,255,255,0.4);font-weight:600;text-align:right;margin-bottom:8px}
+    .login-link{text-align:center;margin-top:18px;font-size:12.5px;color:rgba(255,255,255,0.4)}
+    .login-link a{color:var(--reg-accent);text-decoration:none;font-weight:600}
+    .login-link a:hover{text-decoration:underline}
+    @media(max-width:600px){.reg-card{padding:28px 18px}.step-label{display:none}.reg-nav{flex-direction:column-reverse;gap:10px}.btn-back,.btn-next,.btn-submit{width:100%;justify-content:center}}
+  </style>
+</head>
+<body>
+  <div class="preloader"><div class="loader-spinner"></div><div class="loader-text">OPENING ADMISSION PORTAL</div></div>
+  <canvas class="particle-canvas"></canvas>
+  <div class="circle-glow"></div>
+  <header></header>
+  <main class="reg-wrapper">
+    <div class="reg-card">
+      <div class="reg-header">
+        <div class="reg-icon"><i class="bx bx-user-plus"></i></div>
+        <div class="reg-header-text">
+          <h1>Student Admission Registration</h1>
+          <p>Complete all 6 sections. Staff approval is required before login access is granted.</p>
+        </div>
+      </div>
+      <div id="reg-status" class="status-msg"></div>
+      <div class="step-bar" id="step-bar">
+        <div class="step-item active" data-step="1"><div class="step-num">1</div><div class="step-label">Personal</div></div>
+        <div class="step-item" data-step="2"><div class="step-num">2</div><div class="step-label">Academic</div></div>
+        <div class="step-item" data-step="3"><div class="step-num">3</div><div class="step-label">Family</div></div>
+        <div class="step-item" data-step="4"><div class="step-num">4</div><div class="step-label">Address</div></div>
+        <div class="step-item" data-step="5"><div class="step-num">5</div><div class="step-label">Facilities</div></div>
+        <div class="step-item" data-step="6"><div class="step-num">6</div><div class="step-label">Account</div></div>
+      </div>
+      <div class="step-counter" id="step-counter">Step 1 of 6</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-fill" style="width:16.66%"></div></div>
+      <!-- STEP 1: Personal Details (DB: first_name, last_name, gender, dob, blood_group, email, phone, alternate_phone, register_no, admission_no, roll_no) -->
+      <div class="step-panel active" id="step-1">
+        <div class="sec-title"><i class="bx bx-user"></i>1. Personal Details</div>
+        <div class="form-grid">
+          <div class="form-group"><label for="first_name">First Name <span class="req">*</span></label><input type="text" id="first_name" class="form-input" placeholder="e.g. Arun" required></div>
+          <div class="form-group"><label for="last_name">Last Name <span class="req">*</span></label><input type="text" id="last_name" class="form-input" placeholder="e.g. Kumar" required></div>
+          <div class="form-group"><label for="gender">Gender <span class="req">*</span></label><select id="gender" class="form-input" required><option value="">Select</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></div>
+          <div class="form-group"><label for="dob">Date of Birth <span class="req">*</span></label><input type="date" id="dob" class="form-input" required></div>
+          <div class="form-group"><label for="blood_group">Blood Group</label><select id="blood_group" class="form-input"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+          <div class="form-group"><label for="email">Email Address <span class="req">*</span></label><input type="email" id="email" class="form-input" placeholder="e.g. arun@gmail.com" required></div>
+          <div class="form-group"><label for="phone">Phone Number <span class="req">*</span></label><input type="tel" id="phone" class="form-input" placeholder="e.g. 9876543210" maxlength="20" required></div>
+          <div class="form-group"><label for="alternate_phone">Alternate Phone</label><input type="tel" id="alternate_phone" class="form-input" placeholder="e.g. 9123456789" maxlength="20"></div>
+        </div>
+        <div class="form-divider"></div>
+        <div class="sec-title" style="font-size:12px;color:var(--reg-accent2)"><i class="bx bx-id-card"></i>Admission IDs</div>
+        <div class="form-grid">
+          <div class="form-group"><label for="register_no">Register Number</label><input type="text" id="register_no" class="form-input" placeholder="e.g. REG20231001"></div>
+          <div class="form-group"><label for="admission_no">Admission Number</label><input type="text" id="admission_no" class="form-input" placeholder="e.g. ADM20232001"></div>
+          <div class="form-group"><label for="roll_no">Roll Number <span class="req">*</span></label><input type="text" id="roll_no" class="form-input" placeholder="e.g. R101" required></div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Academic Details (DB: department_id, course_id, year, semester, section, batch, admission_date, status) -->
+      <div class="step-panel" id="step-2">
+        <div class="sec-title"><i class="bx bx-book-open"></i>2. Academic Details</div>
+        <div class="form-grid">
+          <div class="form-group"><label for="department_id">Department <span class="req">*</span></label>
+            <select id="department_id" class="form-input" required>
+              <option value="">Select Department</option>
+              <option value="1">Computer Science (CSE)</option>
+              <option value="2">Electronics &amp; Communication (ECE)</option>
+              <option value="3">Mechanical Engineering (MECH)</option>
+              <option value="4">Civil Engineering (CIVIL)</option>
+              <option value="5">Electrical Engineering (EEE)</option>
+              <option value="6">Information Technology (IT)</option>
+              <option value="7">Biotechnology (BT)</option>
+              <option value="8">Chemical Engineering (CHEM)</option>
+              <option value="9">Mathematics (MATH)</option>
+              <option value="10">Physics (PHY)</option>
+            </select>
+          </div>
+          <div class="form-group"><label for="course_id">Course <span class="req">*</span></label>
+            <select id="course_id" class="form-input" required>
+              <option value="">Select Course</option>
+              <option value="1">Computer Science Engineering</option>
+              <option value="2">Electronics &amp; Communication Engineering</option>
+              <option value="3">Mechanical Engineering</option>
+              <option value="4">Civil Engineering</option>
+              <option value="5">Electrical Engineering</option>
+              <option value="6">Information Technology</option>
+              <option value="7">Biotechnology</option>
+              <option value="8">Chemical Engineering</option>
+              <option value="9">Applied Mathematics</option>
+              <option value="10">Applied Physics</option>
+            </select>
+          </div>
+          <div class="form-group"><label for="year">Year <span class="req">*</span></label>
+            <select id="year" class="form-input" required>
+              <option value="">Select</option><option value="1">1st Year</option><option value="2">2nd Year</option><option value="3">3rd Year</option><option value="4">4th Year</option>
+            </select>
+          </div>
+          <div class="form-group"><label for="semester">Semester <span class="req">*</span></label>
+            <select id="semester" class="form-input" required>
+              <option value="">Select</option><option value="1">Semester 1</option><option value="2">Semester 2</option><option value="3">Semester 3</option><option value="4">Semester 4</option><option value="5">Semester 5</option><option value="6">Semester 6</option><option value="7">Semester 7</option><option value="8">Semester 8</option>
+            </select>
+          </div>
+          <div class="form-group"><label for="section">Section</label>
+            <select id="section" class="form-input">
+              <option value="">Select</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+            </select>
+          </div>
+          <div class="form-group"><label for="batch">Batch <span class="req">*</span></label>
+            <select id="batch" class="form-input" required>
+              <option value="">Select Batch</option><option value="2022-2026">2022-2026</option><option value="2023-2027">2023-2027</option><option value="2024-2028">2024-2028</option><option value="2025-2029">2025-2029</option><option value="2026-2030">2026-2030</option>
+            </select>
+          </div>
+          <div class="form-group"><label for="admission_date">Admission Date</label><input type="date" id="admission_date" class="form-input"></div>
+          <div class="form-group"><label for="status">Application Status</label>
+            <select id="status" class="form-input">
+              <option value="Pending">Pending (Awaiting Approval)</option><option value="Active">Active</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: Family Details (DB: father_name, mother_name, guardian_name, guardian_phone) -->
+      <div class="step-panel" id="step-3">
+        <div class="sec-title"><i class="bx bx-group"></i>3. Family &amp; Guardian Details</div>
+        <div class="form-grid">
+          <div class="form-group"><label for="father_name">Father Name <span class="req">*</span></label><input type="text" id="father_name" class="form-input" placeholder="e.g. Rajesh Kumar" required></div>
+          <div class="form-group"><label for="mother_name">Mother Name <span class="req">*</span></label><input type="text" id="mother_name" class="form-input" placeholder="e.g. Meena Kumar" required></div>
+          <div class="form-group"><label for="guardian_name">Guardian Name</label><input type="text" id="guardian_name" class="form-input" placeholder="If different from parents"></div>
+          <div class="form-group"><label for="guardian_phone">Guardian Phone</label><input type="tel" id="guardian_phone" class="form-input" placeholder="e.g. 9876543210" maxlength="20"></div>
+        </div>
+      </div>
+
+      <!-- STEP 4: Address (DB: address, city, state, pincode) -->
+      <div class="step-panel" id="step-4">
+        <div class="sec-title"><i class="bx bx-map"></i>4. Address Details</div>
+        <div class="form-grid cols1">
+          <div class="form-group"><label for="address">Street Address <span class="req">*</span></label><input type="text" id="address" class="form-input" placeholder="e.g. 12, Gandhi Street, Near Park" required></div>
+        </div>
+        <div class="form-grid cols3">
+          <div class="form-group"><label for="city">City <span class="req">*</span></label><input type="text" id="city" class="form-input" placeholder="e.g. Tiruchirappalli" required></div>
+          <div class="form-group"><label for="state">State <span class="req">*</span></label>
+            <select id="state" class="form-input" required>
+              <option value="">Select State</option>
+              <option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Delhi</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group"><label for="pincode">Pincode <span class="req">*</span></label><input type="text" id="pincode" class="form-input" placeholder="e.g. 620012" maxlength="10" required></div>
+        </div>
+      </div>
+      <!-- STEP 5: Facilities (DB: hostel_id, bus_route_id, library_card_no, profile_photo) -->
+      <div class="step-panel" id="step-5">
+        <div class="sec-title"><i class="bx bx-building-house"></i>5. Facilities &amp; Library</div>
+        <div class="form-grid">
+          <div class="form-group"><label for="hostel_id">Hostel Preference</label>
+            <select id="hostel_id" class="form-input">
+              <option value="">No Hostel</option>
+              <option value="1">Girls Hostel 1</option><option value="2">Boys Hostel 2</option><option value="3">Girls Hostel 3</option><option value="4">Boys Hostel 4</option><option value="5">Girls Hostel 5</option><option value="6">Boys Hostel 6</option><option value="7">Girls Hostel 7</option><option value="8">Boys Hostel 8</option><option value="9">Girls Hostel 9</option><option value="10">Boys Hostel 10</option>
+            </select>
+          </div>
+          <div class="form-group"><label for="bus_route_id">Bus Route</label>
+            <select id="bus_route_id" class="form-input">
+              <option value="">No Bus Route</option>
+              <option value="1">Route 1</option><option value="2">Route 2</option><option value="3">Route 3</option><option value="4">Route 4</option><option value="5">Route 5</option><option value="6">Route 6</option><option value="7">Route 7</option><option value="8">Route 8</option><option value="9">Route 9</option><option value="10">Route 10</option>
+            </select>
+          </div>
+          <div class="form-group"><label for="library_card_no">Library Card Number</label><input type="text" id="library_card_no" class="form-input" placeholder="e.g. LIB5001"></div>
+          <div class="form-group"><label for="profile_photo">Profile Photo Path</label><input type="text" id="profile_photo" class="form-input" placeholder="e.g. /photos/student_1.jpg"></div>
+        </div>
+        <div class="form-divider"></div>
+        <div style="background:rgba(124,111,255,0.07);border:1px solid rgba(124,111,255,0.2);border-radius:12px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+          <div>
+            <p style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.8);">Admission Processing Fee</p>
+            <p style="font-size:11.5px;color:rgba(255,255,255,0.4);margin-top:3px;">Charged to pending fee statement upon approval by staff.</p>
+          </div>
+          <div style="font-family:'Outfit',sans-serif;font-size:26px;font-weight:900;color:var(--reg-accent);">&#8377;15,000</div>
+        </div>
+      </div>
+
+      <!-- STEP 6: Account (DB table: student_login - username, password_hash, otp_enabled) -->
+      <div class="step-panel" id="step-6">
+        <div class="sec-title"><i class="bx bx-lock-alt"></i>6. Portal Account Setup</div>
+        <div class="form-grid">
+          <div class="form-group"><label for="username">Username <span class="req">*</span></label><input type="text" id="username" class="form-input" placeholder="Choose a unique username" required autocomplete="username"></div>
+          <div class="form-group"><label for="password">Password <span class="req">*</span></label><input type="password" id="password" class="form-input" placeholder="Minimum 8 characters" required autocomplete="new-password" minlength="8"></div>
+          <div class="form-group"><label for="confirm_password">Confirm Password <span class="req">*</span></label><input type="password" id="confirm_password" class="form-input" placeholder="Re-enter password" required autocomplete="new-password"></div>
+        </div>
+        <div class="form-divider"></div>
+        <div class="check-group">
+          <input type="checkbox" id="otp_enabled">
+          <label for="otp_enabled" style="text-transform:none;">Enable OTP two-factor authentication for my account</label>
+        </div>
+        <div class="form-divider"></div>
+        <div style="background:rgba(86,207,178,0.07);border:1px solid rgba(86,207,178,0.2);border-radius:12px;padding:16px 20px;">
+          <p style="font-size:12px;color:rgba(86,207,178,0.9);font-weight:600;margin-bottom:6px;"><i class="bx bx-check-shield" style="vertical-align:middle;"></i>&nbsp;Review before submitting</p>
+          <p style="font-size:12px;color:rgba(255,255,255,0.45);line-height:1.7;">By submitting this form you agree that all information provided is accurate. Your registration will be reviewed by college staff and you will receive confirmation at the email address provided.</p>
+        </div>
+      </div>
+
+      <div class="reg-nav">
+        <button class="btn-back" id="btn-prev" style="visibility:hidden;" onclick="changeStep(-1)"><i class="bx bx-arrow-back"></i> Back</button>
+        <button class="btn-next" id="btn-next" onclick="changeStep(1)">Continue <i class="bx bx-right-arrow-alt"></i></button>
+      </div>
+    </div>
+    <div class="login-link">Already have an account? <a href="login.html">Sign in here</a></div>
+  </main>
+  <footer></footer>
+  <script src="js/main.js"></script>
+  <script>
+    const TOTAL_STEPS = 6;
+    let currentStep = 1;
+    function updateUI() {
+      document.querySelectorAll('.step-panel').forEach((p,i)=>p.classList.toggle('active',i+1===currentStep));
+      document.querySelectorAll('.step-item').forEach((item,i)=>{
+        const s=i+1; item.classList.remove('active','done');
+        if(s===currentStep) item.classList.add('active');
+        if(s<currentStep) item.classList.add('done');
+        item.querySelector('.step-num').innerHTML = s<currentStep ? '<i class="bx bx-check" style="font-size:16px;"></i>' : s;
+      });
+      const pct=(currentStep/TOTAL_STEPS)*100;
+      document.getElementById('prog-fill').style.width=pct+'%';
+      document.getElementById('step-counter').textContent='Step '+currentStep+' of '+TOTAL_STEPS;
+      document.getElementById('btn-prev').style.visibility=currentStep>1?'visible':'hidden';
+      const nb=document.getElementById('btn-next');
+      if(currentStep===TOTAL_STEPS){
+        nb.className='btn-submit'; nb.innerHTML='<i class="bx bx-paper-plane"></i> Submit Application'; nb.onclick=submitForm;
+      } else {
+        nb.className='btn-next'; nb.innerHTML='Continue <i class="bx bx-right-arrow-alt"></i>'; nb.onclick=function(){changeStep(1);};
+      }
+    }
+    function validateCurrentStep() {
+      const panel=document.getElementById('step-'+currentStep);
+      let valid=true;
+      panel.querySelectorAll('[required]').forEach(el=>{
+        if(!el.value.trim()){
+          el.style.borderColor='var(--reg-danger)'; el.style.boxShadow='0 0 0 3px rgba(255,92,124,0.2)'; valid=false;
+          el.addEventListener('input',()=>{el.style.borderColor='';el.style.boxShadow='';},{once:true});
+        }
+      });
+      if(!valid) showStatus('Please fill in all required fields marked with *.','error');
+      return valid;
+    }
+    function changeStep(dir) {
+      if(dir===1&&!validateCurrentStep()) return;
+      const n=currentStep+dir;
+      if(n<1||n>TOTAL_STEPS) return;
+      currentStep=n; updateUI();
+      document.querySelector('.reg-card').scrollIntoView({behavior:'smooth',block:'start'});
+      hideStatus();
+    }
+    function showStatus(msg,type){
+      const box=document.getElementById('reg-status');
+      box.textContent=msg; box.className='status-msg '+type; box.style.display='block';
+      box.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+    function hideStatus(){ document.getElementById('reg-status').style.display='none'; }
+    async function submitForm() {
+      const pw=document.getElementById('password').value;
+      const cpw=document.getElementById('confirm_password').value;
+      if(pw!==cpw){showStatus('Passwords do not match. Please re-enter.','error');return;}
+      if(pw.length<8){showStatus('Password must be at least 8 characters.','error');return;}
+      const payload={
+        register_no:document.getElementById('register_no').value.trim(),
+        admission_no:document.getElementById('admission_no').value.trim(),
+        roll_no:document.getElementById('roll_no').value.trim(),
+        first_name:document.getElementById('first_name').value.trim(),
+        last_name:document.getElementById('last_name').value.trim(),
+        gender:document.getElementById('gender').value,
+        dob:document.getElementById('dob').value,
+        blood_group:document.getElementById('blood_group').value,
+        email:document.getElementById('email').value.trim(),
+        phone:document.getElementById('phone').value.trim(),
+        alternate_phone:document.getElementById('alternate_phone').value.trim(),
+        department_id:parseInt(document.getElementById('department_id').value)||null,
+        course_id:parseInt(document.getElementById('course_id').value)||null,
+        year:parseInt(document.getElementById('year').value)||null,
+        semester:parseInt(document.getElementById('semester').value)||null,
+        section:document.getElementById('section').value,
+        batch:document.getElementById('batch').value,
+        hostel_id:parseInt(document.getElementById('hostel_id').value)||null,
+        bus_route_id:parseInt(document.getElementById('bus_route_id').value)||null,
+        library_card_no:document.getElementById('library_card_no').value.trim(),
+        profile_photo:document.getElementById('profile_photo').value.trim(),
+        father_name:document.getElementById('father_name').value.trim(),
+        mother_name:document.getElementById('mother_name').value.trim(),
+        guardian_name:document.getElementById('guardian_name').value.trim(),
+        guardian_phone:document.getElementById('guardian_phone').value.trim(),
+        address:document.getElementById('address').value.trim(),
+        city:document.getElementById('city').value.trim(),
+        state:document.getElementById('state').value,
+        pincode:document.getElementById('pincode').value.trim(),
+        admission_date:document.getElementById('admission_date').value,
+        status:document.getElementById('status').value,
+        username:document.getElementById('username').value.trim(),
+        password:pw,
+        otp_enabled:document.getElementById('otp_enabled').checked?1:0
+      };
+      try {
+        const response=await fetch('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        const data=await response.json();
+        if(response.ok&&data.success){showStatus('Registration submitted successfully! Awaiting staff approval.','success');document.getElementById('btn-next').disabled=true;}
+        else showStatus(data.message||'Registration failed. Please try again.','error');
+      } catch(err) {
+        console.warn('Backend unavailable, using offline localStorage simulation.');
+        try {
+          const students=JSON.parse(localStorage.getItem('mock_students')||'[]');
+          const dup=students.find(s=>(s.roll_no&&s.roll_no.toLowerCase()===payload.roll_no.toLowerCase())||(s.email&&s.email.toLowerCase()===payload.email.toLowerCase())||(s.username&&s.username.toLowerCase()===payload.username.toLowerCase()));
+          if(dup){showStatus('A student with the same Roll Number, Email, or Username already exists.','error');return;}
+          payload.status='Pending'; payload.created_at=new Date().toISOString();
+          students.push(payload); localStorage.setItem('mock_students',JSON.stringify(students));
+          showStatus('Registration submitted in offline mode! Awaiting Staff approval.','success');
+          document.getElementById('btn-next').disabled=true;
+        } catch(localErr){showStatus('Connection error and offline storage unavailable.','error');}
+      }
+    }
+    updateUI();
+  </script>
+</body>
+</html>

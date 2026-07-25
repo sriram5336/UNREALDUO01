@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting to Settings...</title>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const userJson = sessionStorage.getItem('portalUser');
+      if (userJson) {
+        const user = JSON.parse(userJson);
+        if (user.role === 'student') {
+          window.location.href = 'student-dashboard.html';
+        } else if (user.role === 'staff') {
+          window.location.href = 'staff-dashboard.html';
+        } else {
+          window.location.href = 'admin-dashboard.html';
+        }
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+  </script>
+</head>
+<body style="background:#06060c; color:#f8fafc; font-family:sans-serif; display:flex; justify-content:center; align-items:center; height:100vh;">
+  <div>Loading portal preferences node...</div>
+</body>
+</html>

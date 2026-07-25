@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Events & Activities | Saranathan College</title>
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+
+  <!-- Page Loader -->
+  <div class="preloader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">LOADING CAMPUS EVENTS & ACTIVITIES</div>
+  </div>
+
+  <canvas class="particle-canvas"></canvas>
+  <div class="circle-glow"></div>
+
+  <!-- Header -->
+  <header></header>
+
+  <main class="container" style="min-height: 85vh; padding-bottom: 60px;">
+    
+    <!-- Hero Banner -->
+    <section class="animate-slide-up" style="margin-bottom: 35px; text-align: center;">
+      <span class="profile-role-tag" style="background: rgba(16, 185, 129, 0.15); color: var(--color-secondary); padding: 6px 14px; font-size: 12px;">
+        <i class="bx bx-calendar-event"></i> Academic Year 2026-2027
+      </span>
+      <h1 style="font-family: var(--font-title); font-size: 2.6rem; font-weight: 800; margin-top: 10px;">
+        Saranathan Campus Events Feed
+      </h1>
+      <p style="color: var(--text-secondary); margin-top: 8px; font-size: 15px; max-width: 700px; margin-left: auto; margin-right: auto;">
+        Discover upcoming hackathons, national technical symposiums, robotic expos, cultural fests, and workshops.
+      </p>
+    </section>
+
+    <!-- Animated Featured Events Side-Slider / Carousel -->
+    <section class="animate-slide-up delay-1" style="margin-bottom: 50px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h2 style="font-family: var(--font-title); font-size: 20px; font-weight: 700;">
+          <i class="bx bx-star" style="color: var(--color-accent);"></i> Featured Ongoing & Upcoming Events
+        </h2>
+        <span style="font-size: 12px; color: var(--text-muted);">Use arrows to slide</span>
+      </div>
+
+      <div class="events-carousel-wrapper">
+        <button class="carousel-control-btn carousel-prev" id="prev-event-btn"><i class="bx bx-chevron-left"></i></button>
+        <div class="events-carousel-track" id="events-slider-track">
+          <!-- Loaded dynamically -->
+        </div>
+        <button class="carousel-control-btn carousel-next" id="next-event-btn"><i class="bx bx-chevron-right"></i></button>
+      </div>
+    </section>
+
+    <!-- Filter Pills & All Events Section -->
+    <section class="animate-fade-in delay-2">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;">
+        <h2 style="font-family: var(--font-title); font-size: 20px; font-weight: 700;">
+          All Campus Events
+        </h2>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="event-filter-chip active" data-cat="ALL">All Events</button>
+          <button class="event-filter-chip" data-cat="Hackathon">Hackathons</button>
+          <button class="event-filter-chip" data-cat="Symposium">Symposiums</button>
+          <button class="event-filter-chip" data-cat="Workshop">Workshops</button>
+          <button class="event-filter-chip" data-cat="Cultural">Cultural</button>
+        </div>
+      </div>
+
+      <!-- Events Cards Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px;" id="events-grid-list">
+        <!-- Loaded dynamically -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Event Detail Modal -->
+  <div class="modal-overlay" id="event-modal">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="event-modal-close"><i class="bx bx-x"></i></button>
+      <div id="event-modal-content">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <footer></footer>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+  <script src="js/events-catalog.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initEventsPage();
+    });
+
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      if (typeof str !== 'string') return String(str);
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    function initEventsPage() {
+      const sliderTrack = document.getElementById('events-slider-track');
+      const prevBtn = document.getElementById('prev-event-btn');
+      const nextBtn = document.getElementById('next-event-btn');
+      const gridList = document.getElementById('events-grid-list');
+      const filterChips = document.querySelectorAll('.event-filter-chip');
+      const modal = document.getElementById('event-modal');
+      const modalClose = document.getElementById('event-modal-close');
+      const modalContent = document.getElementById('event-modal-content');
+
+      let currentCategory = 'ALL';
+
+      // Render Carousel
+      if (sliderTrack && window.EVENTS_CATALOG) {
+        sliderTrack.innerHTML = window.EVENTS_CATALOG.map(ev => `
+          <div class="event-card-animated" onclick="openEventModal(${ev.id})">
+            <div class="event-poster-wrapper">
+              <span class="event-badge">${escapeHTML(ev.category)}</span>
+              <img class="event-poster-img" src="${encodeURI(ev.poster)}" alt="${escapeHTML(ev.title)}" loading="lazy" onerror="this.onerror=null; this.src='poster.png';">
+            </div>
+            <div style="padding: 20px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+              <div>
+                <span style="font-size: 11px; color: var(--color-primary); font-weight: 700;">${escapeHTML(ev.organizer)}</span>
+                <h3 style="font-family: var(--font-title); font-size: 16px; font-weight: 700; color: var(--text-primary); margin-top: 6px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${escapeHTML(ev.title)}</h3>
+              </div>
+              <div style="margin-top: 15px; border-top: 1px solid var(--border-glass); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted);">
+                <span><i class="bx bx-calendar"></i> ${escapeHTML(ev.date)}</span>
+                <span style="color: var(--color-secondary); font-weight: 700;">${escapeHTML(ev.status)}</span>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Slider Navigation
+      if (prevBtn && nextBtn && sliderTrack) {
+        prevBtn.addEventListener('click', () => {
+          sliderTrack.scrollBy({ left: -350, behavior: 'smooth' });
+        });
+        nextBtn.addEventListener('click', () => {
+          sliderTrack.scrollBy({ left: 350, behavior: 'smooth' });
+        });
+      }
+
+      // Render Grid
+      const renderGrid = () => {
+        if (!gridList || !window.EVENTS_CATALOG) return;
+
+        const filtered = window.EVENTS_CATALOG.filter(ev => {
+          return currentCategory === 'ALL' || ev.category.toLowerCase() === currentCategory.toLowerCase();
+        });
+
+        if (filtered.length === 0) {
+          gridList.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: var(--bg-glass); border-radius: 16px;">
+              <p style="color: var(--text-secondary);">No events found in this category.</p>
+            </div>
+          `;
+          return;
+        }
+
+        gridList.innerHTML = filtered.map(ev => `
+          <div class="glass-card tilt-card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer;" onclick="openEventModal(${ev.id})">
+            <div style="height: 180px; overflow: hidden; position: relative;">
+              <span class="event-badge">${escapeHTML(ev.category)}</span>
+              <img src="${encodeURI(ev.poster)}" alt="${escapeHTML(ev.title)}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" onerror="this.onerror=null; this.src='poster.png';">
+            </div>
+            <div style="padding: 20px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+              <div>
+                <span style="font-size: 11px; color: var(--color-primary); font-weight: 700;"><i class="bx bx-map"></i> ${escapeHTML(ev.venue)}</span>
+                <h3 style="font-family: var(--font-title); font-size: 17px; font-weight: 700; color: var(--text-primary); margin-top: 8px;">${escapeHTML(ev.title)}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${escapeHTML(ev.description)}</p>
+              </div>
+
+              <div style="margin-top: 20px; border-top: 1px solid var(--border-glass); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; color: var(--text-muted);"><i class="bx bx-calendar"></i> ${escapeHTML(ev.date)}</span>
+                <button class="form-submit-btn" style="padding: 8px 16px; font-size: 12px;">View & Register</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      };
+
+      // Filter chips
+      filterChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          filterChips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          currentCategory = chip.getAttribute('data-cat');
+          renderGrid();
+        });
+      });
+
+      // Modal Details
+      window.openEventModal = (eventId) => {
+        const ev = window.EVENTS_CATALOG.find(e => e.id === eventId);
+        if (!ev || !modal || !modalContent) return;
+
+        modalContent.innerHTML = `
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="${encodeURI(ev.poster)}" alt="${escapeHTML(ev.title)}" style="max-height: 300px; width: 100%; object-fit: cover; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+          </div>
+          <div>
+            <span class="profile-role-tag" style="background: rgba(16,185,129,0.15); color: var(--color-secondary);">${escapeHTML(ev.category)}</span>
+            <h2 style="font-family: var(--font-title); font-size: 22px; font-weight: 700; color: var(--text-primary); margin-top: 10px;">${escapeHTML(ev.title)}</h2>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-top: 12px; line-height: 1.6;">${escapeHTML(ev.description)}</p>
+
+            <div style="margin-top: 20px; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 12px; padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px;">
+              <div><i class="bx bx-calendar" style="color:var(--color-primary);"></i> Date: <strong>${escapeHTML(ev.date)}</strong></div>
+              <div><i class="bx bx-time" style="color:var(--color-primary);"></i> Time: <strong>${escapeHTML(ev.time)}</strong></div>
+              <div><i class="bx bx-map" style="color:var(--color-primary);"></i> Venue: <strong>${escapeHTML(ev.venue)}</strong></div>
+              <div><i class="bx bx-user" style="color:var(--color-primary);"></i> Host: <strong>${escapeHTML(ev.organizer)}</strong></div>
+            </div>
+
+            <div style="margin-top: 25px; display: flex; gap: 12px;">
+              <button class="btn-login-nav" style="flex: 1; padding: 14px;" onclick="window.location.href='login.html'">
+                <i class="bx bx-check-shield"></i> Login to Confirm Seat
+              </button>
+              <button class="ripple-btn" style="padding: 14px 24px; background: var(--bg-glass); border: 1px solid var(--border-glass); color: var(--text-primary); border-radius: 8px; cursor: pointer;" onclick="document.getElementById('event-modal').classList.remove('active')">
+                Close
+              </button>
+            </div>
+          </div>
+        `;
+        modal.classList.add('active');
+      };
+
+      if (modalClose) {
+        modalClose.addEventListener('click', () => modal.classList.remove('active'));
+      }
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
+      }
+
+      renderGrid();
+    }
+  </script>
+
+  <style>
+    .event-filter-chip {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .event-filter-chip:hover, .event-filter-chip.active {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+  </style>
+</body>
+</html>

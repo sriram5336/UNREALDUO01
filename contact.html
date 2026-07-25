@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | Saranathan College of Engineering</title>
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+
+  <!-- Page Loader -->
+  <div class="preloader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">CONTACT CHANNELS</div>
+  </div>
+
+  <canvas class="particle-canvas"></canvas>
+  <div class="circle-glow"></div>
+
+  <!-- Header -->
+  <header></header>
+
+  <main class="container" style="min-height: 85vh; padding-top:100px;">
+    
+    <section class="animate-slide-up" style="margin-bottom:40px; text-align:center;">
+      <h1 style="font-family:var(--font-title); font-size:2.5rem; font-weight:800;">Contact Details</h1>
+      <p style="color:var(--text-secondary); margin-top:5px; font-size:14px;">Connect with our administrative office or find our location in Tiruchirappalli.</p>
+    </section>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; flex-wrap:wrap;">
+      
+      <!-- Directory Details -->
+      <div class="glass-card animate-slide-right delay-1" style="display:flex; flex-direction:column; gap:20px;">
+        <h3 style="font-family:var(--font-title); font-size:18px; font-weight:700; color:var(--text-primary); border-bottom:1px solid var(--border-glass); padding-bottom:8px;">Administrative Directory</h3>
+        
+        <div style="display:flex; flex-direction:column; gap:15px; font-size:13px; color:var(--text-secondary);">
+          <div>
+            <h4 style="color:var(--text-primary); font-size:14px; font-weight:600;"><i class="bx bx-building"></i> College Campus Address</h4>
+            <p style="margin-top:4px;">
+              Saranathan College of Engineering,<br>
+              Venkateswara Nagar, Panjappur,<br>
+              Tiruchirappalli - 620012, Tamil Nadu, India.
+            </p>
+          </div>
+
+          <div>
+            <h4 style="color:var(--text-primary); font-size:14px; font-weight:600;"><i class="bx bx-phone"></i> Telecommunications Office</h4>
+            <p style="margin-top:4px;">Principal's Office: +91 84899 15201</p>
+            <p>Administration desk: +91 84899 15202</p>
+          </div>
+
+          <div>
+            <h4 style="color:var(--text-primary); font-size:14px; font-weight:600;"><i class="bx bx-envelope"></i> Electronic Mails</h4>
+            <p style="margin-top:4px;">General Queries: principal@saranathan.ac.in</p>
+            <p>Admissions portal: admissions@saranathan.ac.in</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Styled mock map view -->
+      <div class="glass-card animate-scale-in delay-2" style="display:flex; flex-direction:column; justify-content:center; align-items:center; background-color:#06060c; min-height:300px; padding:20px; text-align:center;">
+        
+        <div style="width:100%; height:180px; border-radius:8px; border:1px solid var(--border-glass); background:linear-gradient(135deg, #1e293b, #0f172a); display:flex; flex-direction:column; justify-content:center; align-items:center; box-shadow:inset 0 0 20px rgba(0,0,0,0.6); position:relative; overflow:hidden;">
+          <!-- Mock map visuals -->
+          <div style="position:absolute; width:150%; height:2px; background:rgba(255,255,255,0.06); transform:rotate(15deg); top:40px;"></div>
+          <div style="position:absolute; width:150%; height:2px; background:rgba(255,255,255,0.06); transform:rotate(-35deg); top:90px;"></div>
+          <div style="position:absolute; width:40px; height:40px; border-radius:50%; background:rgba(59,130,246,0.2); border:2px solid var(--color-primary); display:flex; justify-content:center; align-items:center; color:white; top:70px; left:180px; z-index:2; box-shadow:0 0 15px var(--color-primary-glow);">
+            <i class="bx bx-map" style="font-size:20px;"></i>
+          </div>
+          
+          <span style="font-family:var(--font-title); font-size:14px; font-weight:700; color:white; z-index:2;">Panjappur, Trichy</span>
+          <span style="font-size:10px; color:var(--text-secondary); margin-top:4px; z-index:2;">Venkateswara Nagar Road Junction</span>
+        </div>
+
+        <h4 style="font-family:var(--font-title); font-size:15px; font-weight:700; margin-top:20px;">How to Reach Us</h4>
+        <p style="font-size:12px; color:var(--text-secondary); margin-top:5px; line-height:1.5; max-width:350px;">
+          Located on the Trichy-Madurai National Highway (NH 45B), just 6 km from Trichy Central Bus Stand and Railway Station.
+        </p>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer></footer>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+</body>
+</html>
