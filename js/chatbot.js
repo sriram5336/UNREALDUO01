@@ -165,7 +165,7 @@ function initStandaloneChatbot() {
 <<<<<<< HEAD
   const GEMINI_API_KEY = CONFIG_GEMINI_API_KEY;
 =======
-  const GEMINI_API_KEY = 'AQ.Ab8RN6LGqj50-hCfZpEoDFQVUZGJFqr3XKx3gaZ9dh08untzww';
+  const GEMINI_API_KEY = 'AQ.Ab8RN6KrxZvzh3o4CIbLLOexR6EbCPNgoUyDxwL3gk1wt4AzCw';
 >>>>>>> d82bcede9b7c2268bd7d3a3328432c36b09e58ef
 
   function updateModelStatus(modelName) {
