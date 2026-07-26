@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saranathan AI Chatbot | Google Gemini Assistant</title>
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css?v=9">
+  <link rel="stylesheet" href="css/dashboard.css?v=9">
+  <link rel="stylesheet" href="css/animations.css?v=9">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    /* Query suggest styling button */
+    .preset-query-btn {
+      padding: 8px 15px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      border-radius: 20px;
+      color: var(--text-secondary);
+      font-size: 11px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .preset-query-btn:hover {
+      background: var(--bg-glass-active);
+      color: var(--color-primary);
+      border-color: var(--color-primary-glow);
+    }
+    
+    /* Clean styles when embedded inside dashboard iframe */
+    .in-iframe header, .in-iframe footer, .in-iframe section {
+      display: none !important;
+    }
+    .in-iframe body {
+      background: transparent !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .in-iframe .particle-canvas, .in-iframe .circle-glow {
+      display: none !important;
+    }
+    .in-iframe main {
+      padding: 0 !important;
+      margin: 0 !important;
+      min-height: auto !important;
+      width: 100% !important;
+      align-items: stretch !important;
+    }
+    .in-iframe .glass-card {
+      box-shadow: none !important;
+      border: none !important;
+      border-radius: 0 !important;
+      height: 100vh !important;
+      max-width: 100% !important;
+      background: transparent !important;
+    }
+
+    /* Mobile Chatbot Responsiveness */
+    @media (max-width: 600px) {
+      .chat-bubble {
+        max-width: 90% !important;
+        font-size: 13px !important;
+        padding: 10px 14px !important;
+      }
+      .preset-query-btn {
+        padding: 6px 10px !important;
+        font-size: 10px !important;
+      }
+      .chat-bubble table {
+        display: block !important;
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+      }
+      .chat-input-row {
+        padding: 10px 12px !important;
+      }
+      main.container {
+        padding: 70px 10px 20px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <script>
+    if (window.self !== window.top) {
+      document.documentElement.classList.add('in-iframe');
+    }
+  </script>
+
+  <!-- Page Loader -->
+  <div class="preloader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">WAKING UP GEMINI ENGINE</div>
+  </div>
+
+  <canvas class="particle-canvas"></canvas>
+  <div class="circle-glow"></div>
+
+  <!-- Header -->
+  <header></header>
+
+  <main class="container" style="min-height: 85vh; display:flex; flex-direction:column; align-items:center;">
+    
+    <section class="animate-slide-up" style="margin-bottom:25px; text-align:center;">
+      <h1 style="font-family:var(--font-title); font-size:clamp(1.4rem, 5vw, 2.5rem); font-weight:800; display:flex; justify-content:center; align-items:center; gap:10px;">
+        <i class="bx bx-bot" style="color:var(--color-primary);"></i> Saranathan AI Chatbot
+      </h1>
+      <p style="color:var(--text-secondary); margin-top:5px; font-size:clamp(13px, 3vw, 14px);">Powered by Google Gemini. Locate books, classrooms, cabins, and query placement rules.</p>
+    </section>
+
+    <!-- Chat Interface Card wrapper -->
+    <div class="glass-card animate-scale-in delay-1" style="width:100%; max-width:850px; padding:0; overflow:hidden; display:flex; flex-direction:column; height:500px; border-radius:16px;">
+      
+      <!-- Top banner status indicator -->
+      <div style="background:var(--bg-glass-active); padding:15px 20px; border-bottom:1px solid var(--border-glass); display:flex; align-items:center; gap:10px;">
+        <div style="width:10px; height:10px; border-radius:50%; background:var(--color-secondary); box-shadow: 0 0 10px var(--color-secondary);"></div>
+        <span id="chatbot-model-status" style="font-size:13px; font-weight:600; color:var(--text-primary);">Gemini 2.0 Flash Model Active</span>
+      </div>
+
+      <!-- Messages History -->
+      <div class="chat-history" id="standalone-chat-history" style="flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:15px; background:transparent;">
+        <div class="chat-bubble bot">
+          Hello! Welcome to Saranathan College of Engineering AI Portal. How can I help you find book stacks, locations, HOD cabins, timings or placement eligibility today?
+        </div>
+      </div>
+
+      <!-- suggestion presets -->
+      <div style="padding:10px 20px; display:flex; gap:8px; flex-wrap:wrap; background:rgba(255,255,255,0.01); border-top:1px solid var(--border-glass);">
+        <button class="preset-query-btn" data-query="Where is Operating System book?">Locate OS Book</button>
+        <button class="preset-query-btn" data-query="Where is DBMS Lab?">DBMS Lab Location</button>
+        <button class="preset-query-btn" data-query="Where is Dr. Kumar's Cabin?">Dr. Kumar Cabin</button>
+        <button class="preset-query-btn" data-query="Placement Eligibility?">Placement Eligibility</button>
+        <button class="preset-query-btn" data-query="Bus Timings?">Bus Timings</button>
+        <button class="preset-query-btn" data-query="What are the college working hours?">College Hours</button>
+        <button class="preset-query-btn" data-query="Tell me about the Computer Science department.">CSE Department Info</button>
+        <button class="preset-query-btn" data-query="What is Artificial Intelligence?">What is AI?</button>
+        <button class="preset-query-btn" data-query="Write a short poem about college life.">Poem on College Life</button>
+      </div>
+
+      <!-- Typing Row -->
+      <div class="chat-input-row" style="background:var(--bg-glass-active);">
+        <input type="text" id="standalone-chat-input" class="chat-input" placeholder="Type your college query (e.g. where is DBMS lab?)...">
+        <button id="standalone-chat-send" class="chat-send-btn"><i class="bx bx-send"></i></button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer></footer>
+
+  <!-- Scripts -->
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/chatbot.js"></script>
+  <script>
+    var GEMINI_API_KEY_FALLBACK = 'AQ.Ab8RN6Kn-n7QogGx-OHs-OmqqQixhn7H8nO855mxFjyHCxYELw';
+    setTimeout(function() {
+      if (window.chatbotInitialized) return;
+      console.log("Chatbot Fallback: ES modules blocked, running inline Gemini API...");
+      var chatInput = document.getElementById('standalone-chat-input');
+      var sendBtn = document.getElementById('standalone-chat-send');
+      var chatHistory = document.getElementById('standalone-chat-history');
+      var presetBtns = document.querySelectorAll('.preset-query-btn');
+      var statusEl = document.getElementById('chatbot-model-status');
+      if (!chatInput || !chatHistory) return;
+      if (statusEl) statusEl.textContent = 'Gemini API (Fallback Mode)';
+
+      async function callGemini(text) {
+        var models = ['gemini-2.0-flash','gemini-2.0-flash-lite','gemini-1.5-flash','gemini-1.5-pro'];
+        var sys = 'You are Saranathan College AI assistant. Answer concisely and help the student locate campus resources.';
+        for (var i = 0; i < models.length; i++) {
+          try {
+            var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + models[i] + ':generateContent?key=' + GEMINI_API_KEY_FALLBACK, {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({contents: [{role: 'user', parts: [{text: sys + '\n\n' + text}]}]})
+            });
+            if (res.ok) {
+              var data = await res.json();
+              var reply = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
+              if (reply) {
+                if (statusEl) statusEl.textContent = models[i] + ' Active';
+                return reply;
+              }
+            } else {
+              if (res.status === 401 || res.status === 403) break;
+            }
+          } catch(e) {}
+        }
+        return null;
+      }
+
+      function staticReply(text) {
+        var q = (text || '').toLowerCase();
+        if (q.indexOf('dbms') !== -1 || q.indexOf('database lab') !== -1) return '💻 **DBMS Lab Location**: Located on the **2nd Floor of the CSE Block (Room CSE-204)**.';
+        if (q.indexOf('os book') !== -1 || q.indexOf('operating system') !== -1) return '📚 **OS Books**: Central Library, **2nd Floor, Rack R-12, Shelf B**.';
+        if (q.indexOf('kumar') !== -1 || q.indexOf('cabin') !== -1) return '🚪 **Dr. Kumar**: Admin Block, Cabin A-108. Hours: 11:30-1:00, 3:30-4:30.';
+        if (q.indexOf('placement') !== -1 || q.indexOf('eligibility') !== -1) return '🎯 **Placement**: CGPA ≥ 6.0, 75% attendance. Recruiters: TCS, Infosys, Wipro, Zoho.';
+        if (q.indexOf('bus') !== -1 || q.indexOf('timings') !== -1) return '🚌 **Bus**: Routes 01-32 from city at 7:15-7:30 AM. Return at 4:45 PM.';
+        if (q.indexOf('hello') !== -1 || q.indexOf('hi') !== -1) return 'Hello! Welcome to Saranathan College AI Portal. How can I help?';
+        return '🤖 **Saranathan AI**: For information about "' + text + '", please check your student portal dashboard.';
+      }
+
+      function addBubble(content, sender) {
+        var b = document.createElement('div');
+        b.className = 'chat-bubble ' + sender;
+        if (sender === 'user') {
+          b.style.cssText = 'align-self:flex-end;background:var(--color-primary);color:white;padding:12px 18px;border-radius:18px 18px 2px 18px;max-width:80%;margin-bottom:10px;';
+          b.textContent = content;
+        } else {
+          b.style.cssText = 'align-self:flex-start;background:rgba(255,255,255,0.05);color:var(--text-primary);padding:12px 18px;border-radius:18px 18px 18px 2px;max-width:80%;margin-bottom:10px;border:1px solid var(--border-glass);';
+          b.innerHTML = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+        }
+        chatHistory.appendChild(b);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+      }
+
+      async function handleSend(msg) {
+        var text = msg || chatInput.value.trim();
+        if (!text) return;
+        addBubble(text, 'user');
+        chatInput.value = '';
+        var typing = document.createElement('div');
+        typing.className = 'chat-bubble bot';
+        typing.style.cssText = 'align-self:flex-start;background:rgba(255,255,255,0.05);color:var(--text-primary);padding:12px 18px;border-radius:18px 18px 18px 2px;max-width:80%;margin-bottom:10px;border:1px solid var(--border-glass);font-style:italic;';
+        typing.textContent = 'Gemini AI is thinking...';
+        chatHistory.appendChild(typing);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+        try {
+          var reply = await callGemini(text);
+          typing.remove();
+          if (reply) {
+            addBubble(reply, 'bot');
+          } else {
+            addBubble(staticReply(text), 'bot');
+          }
+        } catch(e) {
+          typing.remove();
+          addBubble(staticReply(text), 'bot');
+        }
+      }
+
+      if (sendBtn) sendBtn.onclick = function() { handleSend(); };
+      chatInput.onkeypress = function(e) { if (e.key === 'Enter') handleSend(); };
+      for (var j = 0; j < presetBtns.length; j++) {
+        (function(btn) {
+          btn.onclick = function() { handleSend(btn.getAttribute('data-query') || btn.textContent); };
+        })(presetBtns[j]);
+      }
+    }, 1500);
+  </script>
+</body>
+</html>
+
