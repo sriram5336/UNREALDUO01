@@ -162,6 +162,24 @@ function initStandaloneChatbot() {
   
   const GEMINI_API_KEY = 'AQ.Ab8RN6IQg8Jm_wdGGN7INZgncCrPJHZY7lV3NS1AeEftnE4DvA';
 
+  function updateModelStatus(modelName) {
+    const statusElems = document.querySelectorAll('#chatbot-model-status, .chatbot-model-status');
+    if (!statusElems.length) return;
+
+    let formattedName = modelName || 'Gemini 2.0 Flash';
+    if (modelName === 'gemini-2.0-flash') formattedName = 'Gemini 2.0 Flash';
+    else if (modelName === 'gemini-1.5-flash') formattedName = 'Gemini 1.5 Flash';
+    else if (modelName === 'gemini-2.0-flash-lite') formattedName = 'Gemini 2.0 Flash Lite';
+    else if (modelName === 'gemini-1.5-pro') formattedName = 'Gemini 1.5 Pro';
+    else if (modelName) {
+      formattedName = modelName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    }
+
+    statusElems.forEach(elem => {
+      elem.textContent = `${formattedName} Model Active`;
+    });
+  }
+
   async function queryGeminiClientSide(text) {
     const credentials = extractCredentials(text);
     let systemInstruction = 'You are Saranathan College AI assistant. Answer concisely and help the student locate relevant campus resources (library, DBMS lab, OS books, cabins, timings, placements eligibility, fee/payment guidance) without inventing facts. If unsure, suggest checking the relevant portal section.';
@@ -233,10 +251,12 @@ function initStandaloneChatbot() {
     };
 
     const modelsToTry = [
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
       'gemini-2.0-flash-lite',
       'gemini-flash-lite-latest',
-      'gemini-2.0-flash',
       'gemini-flash-latest',
+      'gemini-1.5-pro',
       'gemini-3.1-flash-lite',
       'gemini-3.6-flash',
       'gemini-2.5-flash-lite',
@@ -266,6 +286,7 @@ function initStandaloneChatbot() {
           const responseText = resultData?.candidates?.[0]?.content?.parts?.[0]?.text;
           if (responseText) {
             console.log(`Chatbot: Successfully generated response using model [${model}]`);
+            updateModelStatus(model);
             return responseText;
           }
         } else {
