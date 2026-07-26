@@ -1,0 +1,16 @@
+# Dependency folders
+node_modules/
+npm-debug.log*
+
+# Environment secrets and API keys
+.env
+backend/.env
+*.env
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# IDE & Editor configuration
+.vscode/
+.idea/
