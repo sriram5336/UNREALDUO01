@@ -8,14 +8,22 @@ async function generateGeminiResponse({ apiKey, model, message, systemInstructio
 
   const modelsToTry = [
     model,
+    'gemini-2.0-flash',
+    'gemini-1.5-flash',
     'gemini-2.0-flash-lite',
     'gemini-flash-lite-latest',
-    'gemini-2.0-flash',
     'gemini-flash-latest',
+    'gemini-1.5-pro',
     'gemini-3.1-flash-lite',
     'gemini-3.6-flash',
     'gemini-2.5-flash-lite',
-    'gemma-4-26b-a4b-it'
+    'gemini-3-flash-preview',
+    'gemini-3.1-flash-lite-preview',
+    'gemini-3.5-flash-lite',
+    'gemini-3.5-flash',
+    'gemini-pro-latest',
+    'gemma-4-26b-a4b-it',
+    'gemma-4-31b-it'
   ].filter(Boolean);
 
   const body = {
@@ -46,7 +54,7 @@ async function generateGeminiResponse({ apiKey, model, message, systemInstructio
           data?.candidates?.[0]?.content?.parts?.map(p => p?.text).filter(Boolean).join('') ||
           data?.candidates?.[0]?.content?.parts?.[0]?.text ||
           '';
-        if (textOut) return textOut;
+        if (textOut) return { text: textOut, model: m };
       } else {
         const text = await res.text().catch(() => '');
         lastError = new Error(`Gemini model ${m} failed: ${res.status} ${res.statusText} ${text}`);
