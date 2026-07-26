@@ -4,5 +4,5 @@
 // SECURITY: Do NOT place API secrets in client-side bundles.
 // Gemini API key must be set on the server via environment variable `GEMINI_API_KEY`.
 
-export const GEMINI_API_KEY = '';
+export const GEMINI_API_KEY = 'AQ.Ab8RN6IfEe6fyFrF5MLfuHNBF6GgJvAlNBGv9ve29OtIEecJTA';
 
