@@ -92,15 +92,35 @@ function initDashboardSidebar() {
       });
       
       const sidebar = document.querySelector('.dashboard-sidebar');
+      const backdrop = document.querySelector('.sidebar-backdrop');
       if (sidebar) sidebar.classList.remove('active');
+      if (backdrop) backdrop.classList.remove('active');
     });
   });
   
   const menuBtn = document.querySelector('.menu-btn');
   const sidebar = document.querySelector('.dashboard-sidebar');
   if (menuBtn && sidebar) {
-    menuBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('active');
+    let backdrop = document.querySelector('.sidebar-backdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.className = 'sidebar-backdrop';
+      document.body.appendChild(backdrop);
+    }
+    
+    const toggleSidebar = () => {
+      const active = sidebar.classList.toggle('active');
+      if (active) {
+        backdrop.classList.add('active');
+      } else {
+        backdrop.classList.remove('active');
+      }
+    };
+    
+    menuBtn.addEventListener('click', toggleSidebar);
+    backdrop.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      backdrop.classList.remove('active');
     });
   }
 }

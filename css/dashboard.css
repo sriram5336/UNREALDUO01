@@ -559,17 +559,143 @@
   background: #2563eb;
 }
 
-/* Responsive sidebar */
+/* Sidebar Backdrop Overlay for Mobile Taps */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 95;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-backdrop.active {
+  display: block;
+  opacity: 1;
+}
+
+/* Comprehensive Responsive Dashboard Overrides */
 @media (max-width: 992px) {
+  .dashboard-container {
+    padding-top: 60px;
+  }
   .dashboard-sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    bottom: 0;
+    width: 270px;
+    z-index: 100;
     transform: translateX(-100%);
-    width: 260px;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
   }
   .dashboard-sidebar.active {
     transform: translateX(0);
   }
   .dashboard-content {
     margin-left: 0;
-    padding: 20px;
+    padding: 20px 16px;
+    width: 100%;
+  }
+  .dashboard-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
   }
 }
+
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding: 16px 12px;
+  }
+  .dashboard-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .metric-card {
+    padding: 15px 12px;
+  }
+  .metric-info p {
+    font-size: 22px;
+  }
+  .metric-icon-box {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+  }
+  .dashboard-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .batch-filter-container {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .fee-warning-banner {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 16px;
+  }
+  .fee-warning-btn {
+    align-self: flex-end;
+  }
+  /* Timetable Horizontal Scroll Wrapper */
+  .timetable-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+  }
+  .timetable-grid {
+    min-width: 650px;
+  }
+  /* Chatbot responsive inside dashboard */
+  .chatbot-panel-wrapper {
+    flex-direction: column;
+    height: 580px;
+  }
+  .chatbot-tabs {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border-glass);
+  }
+  .chatbot-tab {
+    padding: 10px 14px;
+    white-space: nowrap;
+  }
+  .chat-bubble {
+    max-width: 88%;
+  }
+  .chat-input-row {
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  .attendance-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .chat-bubble {
+    max-width: 95%;
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+  .data-table th, .data-table td {
+    padding: 10px 10px;
+    font-size: 12px;
+  }
+}
+

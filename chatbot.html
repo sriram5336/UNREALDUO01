@@ -57,6 +57,31 @@
       max-width: 100% !important;
       background: transparent !important;
     }
+
+    /* Mobile Chatbot Responsiveness */
+    @media (max-width: 600px) {
+      .chat-bubble {
+        max-width: 90% !important;
+        font-size: 13px !important;
+        padding: 10px 14px !important;
+      }
+      .preset-query-btn {
+        padding: 6px 10px !important;
+        font-size: 10px !important;
+      }
+      .chat-bubble table {
+        display: block !important;
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+      }
+      .chat-input-row {
+        padding: 10px 12px !important;
+      }
+      main.container {
+        padding: 70px 10px 20px !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -93,7 +118,7 @@
       <!-- Top banner status indicator -->
       <div style="background:var(--bg-glass-active); padding:15px 20px; border-bottom:1px solid var(--border-glass); display:flex; align-items:center; gap:10px;">
         <div style="width:10px; height:10px; border-radius:50%; background:var(--color-secondary); box-shadow: 0 0 10px var(--color-secondary);"></div>
-        <span style="font-size:13px; font-weight:600; color:var(--text-primary);">Gemini-Pro Model Active</span>
+        <span id="chatbot-model-status" style="font-size:13px; font-weight:600; color:var(--text-primary);">Gemini 2.0 Flash Model Active</span>
       </div>
 
       <!-- Messages History -->

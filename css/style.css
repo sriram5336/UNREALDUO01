@@ -704,3 +704,214 @@ select.form-input option {
   background: rgba(239, 68, 68, 0.8);
 }
 
+/* ====================================================
+   GLOBAL MOBILE & TABLET RESPONSIVE SYSTEM
+   ==================================================== */
+
+@media (max-width: 992px) {
+  .nav-container {
+    padding: 12px 20px;
+  }
+  .container {
+    padding: 85px 20px 40px;
+  }
+  .modal-card {
+    padding: 20px;
+    max-width: 95%;
+  }
+  /* Remove fixed min-widths that cause overflow on tablets/mobiles */
+  [style*="min-width:450px"], [style*="min-width: 450px"],
+  [style*="min-width:320px"], [style*="min-width: 320px"],
+  [style*="max-width:400px"], [style*="max-width: 400px"] {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  main.container[style*="flex"] {
+    flex-direction: column !important;
+  }
+}
+
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden !important;
+  }
+  .nav-container {
+    padding: 10px 16px;
+  }
+  .logo-area {
+    gap: 8px;
+  }
+  .logo-title {
+    font-size: 16px;
+  }
+  .btn-login-nav {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+  .theme-toggle {
+    width: 34px;
+    height: 34px;
+  }
+  .menu-btn {
+    font-size: 26px;
+  }
+  .container {
+    padding: 80px 14px 30px;
+  }
+  .glass-card {
+    padding: 20px 15px;
+    border-radius: 12px;
+  }
+  
+  /* Hero & Headings Fluid Typography */
+  h1, [style*="font-size: 3.2rem"], [style*="font-size: 2.5rem"], [style*="font-size:3rem"] {
+    font-size: 1.85rem !important;
+    line-height: 1.25 !important;
+    word-wrap: break-word !important;
+  }
+  h2, [style*="font-size: 24px"], [style*="font-size: 22px"] {
+    font-size: 1.35rem !important;
+  }
+  h3, [style*="font-size: 20px"], [style*="font-size: 18px"] {
+    font-size: 1.15rem !important;
+  }
+  p, [style*="font-size: 1.1rem"] {
+    font-size: 0.92rem !important;
+  }
+
+  /* Responsive hero button cluster */
+  [style*="display: flex; gap: 20px"], [style*="display:flex; gap:20px"] {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 10px !important;
+  }
+  [style*="display: flex; gap: 20px"] button, [style*="display:flex; gap:20px"] button {
+    width: 100% !important;
+    padding: 12px 18px !important;
+    font-size: 14px !important;
+    justify-content: center !important;
+  }
+
+  .floating-poster-trigger {
+    bottom: 15px;
+    right: 15px;
+    padding: 10px 16px;
+    font-size: 12px;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+  }
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  footer {
+    padding: 30px 16px 20px;
+  }
+  .library-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .book-cover-container {
+    height: 180px;
+  }
+  .book-title-compact {
+    font-size: 12px;
+  }
+  .carousel-control-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  .event-card-animated {
+    min-width: 270px;
+    max-width: 290px;
+  }
+
+  /* 3D Campus popups mobile placement */
+  #building-info-card, [style*="position: absolute; top: 20px; left: 20px"] {
+    position: fixed !important;
+    left: 12px !important;
+    right: 12px !important;
+    bottom: 20px !important;
+    top: auto !important;
+    width: auto !important;
+    max-width: calc(100vw - 24px) !important;
+    z-index: 90 !important;
+  }
+  
+  /* Multi-step registration fixes */
+  .reg-wrapper {
+    padding: 80px 10px 30px !important;
+  }
+  .reg-card {
+    padding: 20px 14px !important;
+    border-radius: 14px !important;
+  }
+  .reg-header {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 10px !important;
+  }
+  .step-bar {
+    gap: 4px !important;
+  }
+  .step-label {
+    font-size: 8.5px !important;
+  }
+  .reg-nav {
+    flex-direction: column-reverse !important;
+    gap: 10px !important;
+  }
+  .reg-nav button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-title {
+    font-size: 13px;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .college-logo-img {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  .nav-container {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .btn-login-nav {
+    display: none; /* Accessible via mobile nav drawer */
+  }
+  .container {
+    padding: 72px 10px 20px;
+  }
+  .glass-card {
+    padding: 14px 10px;
+    border-radius: 10px;
+  }
+  .form-input {
+    font-size: 16px !important; /* Prevents auto-zoom on iOS safari */
+    padding: 10px 12px;
+  }
+  .preset-query-btn {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+  .library-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .book-cover-container {
+    height: 160px;
+  }
+}
+
+

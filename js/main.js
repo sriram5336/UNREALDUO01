@@ -345,11 +345,24 @@ function initMobileMenu() {
   const navLinks = document.querySelector('.nav-links');
   if (!menuBtn || !navLinks) return;
   
-  menuBtn.addEventListener('click', () => {
+  menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
     const isActive = navLinks.classList.toggle('active');
-    if (isActive) {
-      menuBtn.innerHTML = '<i class="bx bx-x"></i>';
-    } else {
+    menuBtn.innerHTML = isActive ? '<i class="bx bx-x"></i>' : '<i class="bx bx-menu"></i>';
+  });
+
+  // Close menu when clicking nav links
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('active');
+      menuBtn.innerHTML = '<i class="bx bx-menu"></i>';
+    });
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!navLinks.contains(e.target) && !menuBtn.contains(e.target) && navLinks.classList.contains('active')) {
+      navLinks.classList.remove('active');
       menuBtn.innerHTML = '<i class="bx bx-menu"></i>';
     }
   });

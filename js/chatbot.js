@@ -87,11 +87,30 @@ function initStandaloneChatbot() {
     return { name, roll, marks };
   }
 
+  // Helper to format student marks directly from database record
+  function formatStudentMarksDirectly(studentData) {
+    let text = `📊 **Internal Marks Summary for ${studentData.name} (Student ID: ${studentData.studentId})**\n\n`;
+    if (!studentData.marks || studentData.marks.length === 0) {
+      text += "No internal marks records found for this student in the database.\n";
+    } else {
+      text += "| Subject Code | Subject Name | IA1 | IA2 | Model Exam | Assignment | Attendance |\n";
+      text += "|---|---|---|---|---|---|---|\n";
+      studentData.marks.forEach(m => {
+        text += `| ${m.subjectCode} | ${m.subjectName} | ${m.ia1 ?? '—'} | ${m.ia2 ?? '—'} | ${m.modelExam ?? '—'} | ${m.assignment ?? '—'} | ${m.attendanceMark ?? '—'} |\n`;
+      });
+      text += "\n*Keep up the great work! If you have any questions regarding your internal marks, please reach out to your faculty advisor.*";
+    }
+    return text;
+  }
+
   // Markdown-to-HTML parser to render bold text, lists, and tables inside chat bubbles
   function parseMarkdown(text) {
     if (!text) return '';
     
-    const lines = text.split(/\r?\n/);
+    // Normalize literal <br> tags to newlines
+    let cleanText = text.replace(/<br\s*\/?>/gi, '\n');
+    
+    const lines = cleanText.split(/\r?\n/);
     let result = [];
     let inTable = false;
     let tableRows = [];
@@ -141,11 +160,32 @@ function initStandaloneChatbot() {
     return result.join('');
   }
   
-  const GEMINI_API_KEY = 'AQ.Ab8RN6JBUtxqcZvs06x9A1OonFmiCw7BRCmCsGVBs5i6h79R_w';
+  const GEMINI_API_KEY = 'AQ.Ab8RN6IfEe6fyFrF5MLfuHNBF6GgJvAlNBGv9ve29OtIEecJTA';
+
+  function updateModelStatus(modelName) {
+    const statusElems = document.querySelectorAll('#chatbot-model-status, .chatbot-model-status');
+    if (!statusElems.length) return;
+
+    let formattedName = modelName || 'Gemini Flash Latest';
+    if (modelName === 'gemini-flash-latest') formattedName = 'Gemini Flash Latest';
+    else if (modelName === 'gemini-2.0-flash') formattedName = 'Gemini 2.0 Flash';
+    else if (modelName === 'gemini-1.5-flash') formattedName = 'Gemini 1.5 Flash';
+    else if (modelName === 'gemini-2.0-flash-lite') formattedName = 'Gemini 2.0 Flash Lite';
+    else if (modelName === 'gemini-1.5-pro') formattedName = 'Gemini 1.5 Pro';
+    else if (modelName) {
+      formattedName = modelName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    }
+
+    statusElems.forEach(elem => {
+      elem.textContent = `${formattedName} Model Active`;
+    });
+  }
 
   async function queryGeminiClientSide(text) {
     const credentials = extractCredentials(text);
     let systemInstruction = 'You are Saranathan College AI assistant. Answer concisely and help the student locate relevant campus resources (library, DBMS lab, OS books, cabins, timings, placements eligibility, fee/payment guidance) without inventing facts. If unsure, suggest checking the relevant portal section.';
+
+    let fetchedStudentMarksData = null;
 
     if (credentials) {
       console.log("Client-side Chatbot: Verifying student login...");
@@ -156,7 +196,7 @@ function initStandaloneChatbot() {
       
       const user = userData && userData[0];
       if (loginErr || !user || !user.success) {
-        throw new Error('⚠️ **Authentication Failed.** I was unable to verify your student login credentials. Please check your username and password.');
+        throw new Error('AUTH_FAILED: ⚠️ **Authentication Failed.** I was unable to verify your student login credentials. Please check your username and password.');
       }
 
       // Fetch marks
@@ -166,7 +206,7 @@ function initStandaloneChatbot() {
         .eq('student_id', user.student_id);
 
       if (marksErr) {
-        throw new Error('⚠️ Failed to fetch student marks from the database.');
+        throw new Error('DB_FETCH_FAILED: ⚠️ Failed to fetch student marks from the database.');
       }
 
       // Fetch subjects
@@ -190,6 +230,12 @@ function initStandaloneChatbot() {
         };
       });
 
+      fetchedStudentMarksData = {
+        name: user.name || user.username || credentials.username,
+        studentId: user.student_id,
+        marks: resolvedMarks
+      };
+
       // Inject student marks context
       systemInstruction += `\n\n[STUDENT DATA CONTEXT]\nStudent Name: ${user.name || user.username}\nStudent ID: ${user.student_id}\nInternal Marks:\n${JSON.stringify(resolvedMarks, null, 2)}\n\nPlease summarize the marks for this student. Present them in a neat text table format with columns for Subject Code, Subject Name, IA1, IA2, Model Exam, Assignment, and Attendance Mark. Conclude with a helpful, encouraging remark.`;
     }
@@ -206,18 +252,28 @@ function initStandaloneChatbot() {
     };
 
     const modelsToTry = [
-      'gemini-3.1-flash-lite',
-      'gemini-flash-lite-latest',
-      'gemini-2.5-flash',
+      'gemini-flash-latest',
       'gemini-2.0-flash',
+      'gemini-2.0-flash-lite',
+      'gemini-flash-lite-latest',
       'gemini-1.5-flash',
-      'gemini-pro'
+      'gemini-1.5-pro',
+      'gemini-3.1-flash-lite',
+      'gemini-3.6-flash',
+      'gemini-2.5-flash-lite',
+      'gemini-3-flash-preview',
+      'gemini-3.1-flash-lite-preview',
+      'gemini-3.5-flash-lite',
+      'gemini-3.5-flash',
+      'gemini-pro-latest',
+      'gemma-4-26b-a4b-it',
+      'gemma-4-31b-it'
     ];
 
     let lastError = null;
     for (const model of modelsToTry) {
       try {
-        console.log(`Chatbot: Trying model ${model}...`);
+        console.log(`Chatbot: Attempting Gemini model [${model}]...`);
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
         
         const response = await fetch(url, {
@@ -230,17 +286,28 @@ function initStandaloneChatbot() {
           const resultData = await response.json();
           const responseText = resultData?.candidates?.[0]?.content?.parts?.[0]?.text;
           if (responseText) {
+            console.log(`Chatbot: Successfully generated response using model [${model}]`);
+            updateModelStatus(model);
             return responseText;
           }
         } else {
           const errorData = await response.json().catch(() => ({}));
-          lastError = new Error(errorData?.error?.message || `API error (${model}): ${response.status}`);
+          const errMsg = errorData?.error?.message || `API HTTP ${response.status}`;
+          console.warn(`Chatbot: Model [${model}] returned error (${response.status}: ${errMsg}). Failing over to next model...`);
+          lastError = new Error(`API error (${model}): ${errMsg}`);
         }
       } catch (err) {
+        console.warn(`Chatbot: Network / fetch exception on model [${model}]: ${err.message}. Failing over to next model...`);
         lastError = err;
       }
     }
-    throw lastError || new Error("Failed to connect to any Gemini model");
+
+    // If Gemini call failed BUT student marks were successfully retrieved from database, return direct formatted result!
+    if (fetchedStudentMarksData) {
+      return formatStudentMarksDirectly(fetchedStudentMarksData);
+    }
+
+    throw lastError || new Error("Failed to connect to AI server");
   }
   
   const sendMessage = async (messageText) => {
@@ -271,31 +338,36 @@ function initStandaloneChatbot() {
       typing.remove();
       console.error("Chatbot error details:", err);
 
-      // If it is a clean authentication error thrown by Supabase, show it directly
-      if (err.message && err.message.includes('Authentication Failed')) {
-        appendBubble(err.message, 'bot');
+      const errMsg = err.message || String(err);
+
+      // Handle Authentication Failure specifically
+      if (errMsg.includes('AUTH_FAILED') || errMsg.includes('Authentication Failed')) {
+        appendBubble('⚠️ **Authentication Failed.** I was unable to verify your student login credentials. Please check your username and password.', 'bot');
         return;
       }
 
-      // Check if credentials are in the message for offline marks retrieval
+      // Handle DB fetch failure specifically
+      if (errMsg.includes('DB_FETCH_FAILED')) {
+        appendBubble('⚠️ **Database Error.** Failed to fetch student marks from the database.', 'bot');
+        return;
+      }
+
+      // Check if credentials are in the message for offline marks retrieval (local storage)
       const credentials = extractCredentials(text);
       if (credentials) {
         const studentData = getLocalStudentMarks(credentials.username, credentials.password);
         if (studentData) {
-          let tableText = `📊 **Offline Database Results for ${studentData.name} (${studentData.roll})**<br><br>`;
+          let tableText = `📊 **Offline Database Results for ${studentData.name} (${studentData.roll})**\n\n`;
           if (studentData.marks.length === 0) {
             tableText += "No marks records found for this student in the local database.";
           } else {
-            tableText += "| Subject | Internal Score | Grade |<br>|---|---|---|<br>";
+            tableText += "| Subject | Internal Score | Grade |\n|---|---|---|\n";
             studentData.marks.forEach(m => {
-              tableText += `| ${m.Subject} | ${m.Internal} | ${m.SemesterGrade || '—'} |<br>`;
+              tableText += `| ${m.Subject} | ${m.Internal} | ${m.SemesterGrade || '—'} |\n`;
             });
-            tableText += "<br>*Note: Displayed from offline database sandbox simulation.*";
+            tableText += "\n*Note: Displayed from offline database sandbox simulation.*";
           }
           appendBubble(tableText, 'bot');
-          return;
-        } else {
-          appendBubble(`⚠️ **Database Connection Error.**<br>Details: ${err.message || err}`, 'bot');
           return;
         }
       }
@@ -305,6 +377,7 @@ function initStandaloneChatbot() {
       let matchedAns = null;
       
       for (const entry of kb) {
+        if (!entry.Keywords || !entry.Answer) continue;
         const keywords = entry.Keywords.split(',').map(k => k.trim().toLowerCase());
         const queryLower = text.toLowerCase();
         const match = keywords.every(kw => queryLower.includes(kw));
@@ -317,21 +390,34 @@ function initStandaloneChatbot() {
       if (matchedAns) {
         appendBubble(matchedAns, 'bot');
       } else {
-        // Fallback simulation text
-        let fallbackMsg = "I am the Saranathan AI Offline Assistant. ";
+        // Smart Fallback Assistant for general campus and knowledge queries
+        let fallbackMsg = "";
         const q = text.toLowerCase();
-        if (q.includes('hi') || q.includes('hello')) {
-          fallbackMsg = "Hello! How can I assist you with catalog racks, syllabus downloads, or exam timetables today?";
+        
+        if (q.includes('hi') || q.includes('hello') || q.includes('hey')) {
+          fallbackMsg = "Hello! Welcome to Saranathan College of Engineering AI Portal. How can I assist you with book stacks, classroom locations, faculty cabins, exam timetables, or placements eligibility today?";
+        } else if (q.includes('ai') || q.includes('artificial intelligence')) {
+          fallbackMsg = "🤖 **Artificial Intelligence (AI)** is the simulation of human intelligence in machines programmed to think, learn, and solve problems. Key subfields include Machine Learning, Deep Learning, Natural Language Processing, and Computer Vision.";
+        } else if (q.includes('dbms') || q.includes('database lab')) {
+          fallbackMsg = "💻 **DBMS Lab Location**: Located on the **2nd Floor of the CSE Block (Room CSE-204)**. Equipped with Oracle Database, MySQL, and PostgreSQL workstations.";
+        } else if (q.includes('os book') || q.includes('operating system book') || q.includes('locate os')) {
+          fallbackMsg = "📚 **Operating System Books**: Located in the Central Library, **2nd Floor, Rack R-12, Shelf B**. Books by Silberschatz, Galvin, and Tanenbaum are available.";
+        } else if (q.includes('kumar') || q.includes('dr. kumar') || q.includes('cabin')) {
+          fallbackMsg = "🚪 **Dr. Kumar's Cabin**: Located on the **1st Floor, Admin Block (Cabin A-108)**. Office hours for student consultation: 11:30 AM - 1:00 PM and 3:30 PM - 4:30 PM.";
+        } else if (q.includes('placement') || q.includes('job') || q.includes('eligibility')) {
+          fallbackMsg = "🎯 **Placement Eligibility Rules**:\n- Minimum **60% (6.0 CGPA)** aggregate without standing arrears.\n- Minimum 75% attendance across all semesters.\n- Mandatory completion of Campus Recruitment Training (CRT) modules.";
+        } else if (q.includes('bus') || q.includes('timings') || q.includes('transport')) {
+          fallbackMsg = "🚌 **Bus Timings**: Routes 08, 15, 22, and 31 start from major city stops at **7:15 AM - 7:30 AM** and arrive at campus by 8:15 AM. Return buses leave at 4:45 PM.";
+        } else if (q.includes('hour') || q.includes('timing') || q.includes('working')) {
+          fallbackMsg = "⏰ **College Hours**:\n- Campus Hours: 8:30 AM - 4:30 PM (Monday to Saturday)\n- Central Library: 8:00 AM - 8:00 PM\n- Lunch Break: 12:30 PM - 1:20 PM";
+        } else if (q.includes('cse') || q.includes('computer science')) {
+          fallbackMsg = "🖥️ **Computer Science & Engineering Department**:\n- Department Head: Dr. S. Rajkumar\n- Labs: DBMS Lab, AI & ML Lab, Cloud Computing Lab, Network Security Lab\n- Location: CSE Block, 1st & 2nd Floors.";
+        } else if (q.includes('poem')) {
+          fallbackMsg = "✨ *Amidst green trees and bustling halls,*\n*Where knowledge echoes through classroom walls,*\n*We code, we learn, we dream so bright,*\n*Saranathan guides our future's light.* 🎓";
         } else if (q.includes('fees') || q.includes('pending')) {
-          fallbackMsg = "You can verify your pending tuition/mess fees on your Student Dashboard Home Overview page where you can also make sandbox card payments.";
-        } else if (q.includes('library') || q.includes('book')) {
-          fallbackMsg = "The Central Library is open from 8:00 AM to 8:00 PM. Shelf coordinates: Operating System and DBMS concepts books are on the 2nd Floor, Rack R-12.";
-        } else if (q.includes('bus') || q.includes('timings')) {
-          fallbackMsg = "Saranathan College runs routes 08, 15, 22 busses daily starting at 07:15 - 07:30 AM. Review driver contacts in the Hostel & Transport tab.";
-        } else if (q.includes('mark')) {
-          fallbackMsg = "To check your marks, please query using your username and password, e.g.: 'What is my mark with username <your_name> and password <your_pass>'";
+          fallbackMsg = "💳 You can verify and pay tuition or hostel fees on your **Student Dashboard Home Overview** section using the sandbox payment portal.";
         } else {
-          fallbackMsg += "Please query about OS books, DBMS lab, or placements criteria details.";
+          fallbackMsg = "I am the Saranathan AI Assistant. I can help you find campus locations, DBMS lab, library book racks, faculty cabins, placement eligibility, or student internal marks! Try clicking any of the preset buttons below.";
         }
         appendBubble(fallbackMsg, 'bot');
       }

@@ -231,18 +231,18 @@ app.post('/api/chatbot/query', async (req, res) => {
       }
     }
 
-    const responseText = await generateGeminiResponse({
+    const geminiResult = await generateGeminiResponse({
       apiKey,
       model,
       message,
       systemInstruction
     });
 
-    if (!responseText) {
+    if (!geminiResult || !geminiResult.text) {
       return res.status(200).json({ success: false, message: 'Gemini returned empty response', response: '' });
     }
 
-    return res.status(200).json({ success: true, response: responseText });
+    return res.status(200).json({ success: true, response: geminiResult.text, model: geminiResult.model });
   } catch (err) {
     console.error('Gemini error:', err);
     return res.status(500).json({ success: false, message: 'Gemini query failed', response: '' });
