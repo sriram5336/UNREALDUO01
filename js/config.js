@@ -5,3 +5,4 @@
 
 export const GEMINI_API_KEY = typeof window !== 'undefined' && window.GEMINI_API_KEY ? window.GEMINI_API_KEY : '';
 
+

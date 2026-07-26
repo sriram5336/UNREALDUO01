@@ -4,11 +4,8 @@ import { supabase } from './supabaseClient.js';
 import { GEMINI_API_KEY as CONFIG_GEMINI_API_KEY } from './config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-<<<<<<< Updated upstream
-    window.chatbotInitialized = true;
-=======
   window.chatbotInitialized = true;
->>>>>>> Stashed changes
+
   initStandaloneChatbot();
 });
 
@@ -167,6 +164,9 @@ function initStandaloneChatbot() {
   }
   
   const GEMINI_API_KEY = CONFIG_GEMINI_API_KEY;
+  const GEMINI_API_KEY = CONFIG_GEMINI_API_KEY;
+
+>>>>>>> 0755d604bc01a247a5b8ca8a704956063efef7d9
 
   function updateModelStatus(modelName) {
     const statusElems = document.querySelectorAll('#chatbot-model-status, .chatbot-model-status');
