@@ -957,7 +957,7 @@ function initDashboardChatbot() {
     return result.join('');
   }
   
-  const GEMINI_API_KEY = typeof window !== 'undefined' && window.GEMINI_API_KEY ? window.GEMINI_API_KEY : '';
+  const GEMINI_API_KEY = 'AQ.Ab8RN6L3ORMunHhWr4go3_A1Vq1Y930K2Goo8FhbW7B8ovpnGQ';
 
   async function queryGeminiClientSide(text) {
     const credentials = extractCredentials(text);
