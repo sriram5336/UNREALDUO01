@@ -160,13 +160,13 @@ function initStandaloneChatbot() {
     return result.join('');
   }
   
-  const GEMINI_API_KEY = 'AQ.Ab8RN6IfEe6fyFrF5MLfuHNBF6GgJvAlNBGv9ve29OtIEecJTA';
+  const GEMINI_API_KEY = '';
 
   function updateModelStatus(modelName) {
     const statusElems = document.querySelectorAll('#chatbot-model-status, .chatbot-model-status');
     if (!statusElems.length) return;
 
-    let formattedName = modelName || 'Gemini Flash Latest';
+    let formattedName = modelName || 'Gemini 2.0 Flash';
     if (modelName === 'gemini-flash-latest') formattedName = 'Gemini Flash Latest';
     else if (modelName === 'gemini-2.0-flash') formattedName = 'Gemini 2.0 Flash';
     else if (modelName === 'gemini-1.5-flash') formattedName = 'Gemini 1.5 Flash';
@@ -252,11 +252,13 @@ function initStandaloneChatbot() {
     };
 
     const modelsToTry = [
-      'gemini-flash-latest',
       'gemini-2.0-flash',
       'gemini-2.0-flash-lite',
       'gemini-flash-lite-latest',
       'gemini-1.5-flash',
+      'gemini-2.0-flash-lite',
+      'gemini-flash-lite-latest',
+      'gemini-flash-latest',
       'gemini-1.5-pro',
       'gemini-3.1-flash-lite',
       'gemini-3.6-flash',
