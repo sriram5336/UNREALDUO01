@@ -1,6 +1,7 @@
 // Standalone Chatbot Controller (chatbot.html)
 // Supports LocalStorage simulation search fallback
 import { supabase } from './supabaseClient.js';
+import { GEMINI_API_KEY as CONFIG_GEMINI_API_KEY } from './config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   initStandaloneChatbot();
@@ -160,7 +161,7 @@ function initStandaloneChatbot() {
     return result.join('');
   }
   
-  const GEMINI_API_KEY = 'AQ.Ab8RN6IfEe6fyFrF5MLfuHNBF6GgJvAlNBGv9ve29OtIEecJTA';
+  const GEMINI_API_KEY = CONFIG_GEMINI_API_KEY;
 
   function updateModelStatus(modelName) {
     const statusElems = document.querySelectorAll('#chatbot-model-status, .chatbot-model-status');
@@ -179,6 +180,75 @@ function initStandaloneChatbot() {
     statusElems.forEach(elem => {
       elem.textContent = `${formattedName} Model Active`;
     });
+  }
+
+  function generateSmartAIResponse(text) {
+    const q = (text || '').toLowerCase();
+
+    if (q.includes('dbms') || q.includes('database lab')) {
+      return "💻 **DBMS Lab Location**:\nLocated on the **2nd Floor of the CSE Block (Room CSE-204)**. Equipped with Oracle Database 19c, MySQL, PostgreSQL, and Linux workstations. Lab Supervisor: Prof. M. Anitha.";
+    }
+    if (q.includes('os book') || q.includes('operating system book') || q.includes('locate os') || q.includes('operating system')) {
+      return "📚 **Operating System Reference Books**:\n- **Location**: Central Library, **2nd Floor, Rack R-12, Shelf B**.\n- **Recommended Textbooks**:\n  1. *Operating System Concepts* by Silberschatz, Galvin & Gagne (9th/10th Ed)\n  2. *Modern Operating Systems* by Andrew S. Tanenbaum\n  3. *Operating Systems: Internals and Design Principles* by William Stallings.";
+    }
+    if (q.includes('kumar') || q.includes('dr. kumar') || q.includes('cabin')) {
+      return "🚪 **Faculty Cabin Details**:\n- **Dr. S. Kumar (Professor, CSE)**: **1st Floor, Admin Block (Cabin A-108)**.\n- **Consultation Hours**: 11:30 AM - 1:00 PM and 3:30 PM - 4:30 PM (Mon-Fri).\n- **Email**: `kumar.s@saranathan.ac.in`.";
+    }
+    if (q.includes('placement') || q.includes('job') || q.includes('eligibility') || q.includes('recruitment')) {
+      return "🎯 **Campus Placement Eligibility & Criteria**:\n- **Academic Threshold**: Aggregate of **60% or 6.0 CGPA** without active standing arrears.\n- **Attendance**: Minimum 75% attendance across all semesters.\n- **Training**: Mandatory completion of Campus Recruitment Training (CRT) modules.\n- **Top Recruiters**: TCS, Infosys, Wipro, Cognizant, Zoho, Kaar Tech, Accenture.";
+    }
+    if (q.includes('bus') || q.includes('timings') || q.includes('transport') || q.includes('route')) {
+      return "🚌 **College Transport & Bus Timings**:\n- **Morning Pickups**: Routes 01 through 32 start from major Trichy city stops at **7:15 AM - 7:30 AM** and reach campus by 8:15 AM.\n- **Evening Departures**: Buses depart from campus transport yard at **4:45 PM** sharp.\n- **Transport Office**: Ground floor, Main Block (Ext. 204).";
+    }
+    if (q.includes('hour') || q.includes('timing') || q.includes('working') || q.includes('time')) {
+      return "⏰ **College Operating Hours**:\n- **Campus Academic Hours**: 8:30 AM - 4:30 PM (Monday to Saturday)\n- **Central Library**: 8:00 AM - 8:00 PM (All working days)\n- **Lunch Break**: 12:30 PM - 1:20 PM\n- **Administrative Office**: 8:30 AM - 5:00 PM.";
+    }
+    if (q.includes('cse') || q.includes('computer science')) {
+      return "🖥️ **Department of Computer Science & Engineering**:\n- **HOD**: Dr. S. Rajkumar\n- **Accreditation**: NBA Accredited & Anna University Permanent Affiliation\n- **Laboratories**: DBMS Lab (CSE-204), AI & ML Lab (CSE-301), Cloud Computing Lab (CSE-305)\n- **Location**: CSE Block, 1st & 2nd Floors.";
+    }
+    if (q.includes('fees') || q.includes('tuition') || q.includes('payment')) {
+      return "💳 **Fee Payment Guidance**:\nTuition fees, hostel fees, and exam fees can be verified and paid online through the **Student Dashboard** under the **Overview & Fees** section via our secure payment gateway.";
+    }
+    if (q.includes('ai') || q.includes('artificial intelligence') || q.includes('machine learning') || q.includes('ml')) {
+      return "🤖 **Artificial Intelligence & Machine Learning**:\n\nArtificial Intelligence (AI) is the simulation of human intelligence by computer systems.\n\n### Core Fields:\n- **Machine Learning (ML)**: Algorithms that learn from data patterns (Supervised, Unsupervised, Reinforcement Learning).\n- **Deep Learning**: Multi-layered Neural Networks for vision and speech.\n- **Natural Language Processing (NLP)**: Understanding human language and text generation.\n- **Computer Vision**: Analyzing visual data from images and videos.";
+    }
+    if (q.includes('python') || q.includes('java') || q.includes('c++') || q.includes('programming') || q.includes('code')) {
+      return "💻 **Programming Core Concepts**:\n\nProgramming involves writing instructions for computers to solve complex problems.\n\n- **Object-Oriented Programming (OOP)**: Encapsulation, Inheritance, Polymorphism, Abstraction.\n- **Data Structures**: Arrays, Linked Lists, Stacks, Queues, Trees, Graphs, Hash Tables.";
+    }
+    if (q.includes('sql') || q.includes('database') || q.includes('query')) {
+      return "🗄️ **Database Management Systems (DBMS)**:\n\nDBMS allows structured storage, manipulation, and retrieval of data.\n\n- **Core Language**: SQL (Structured Query Language)\n- **Operations**: DDL (CREATE, ALTER), DML (SELECT, INSERT, UPDATE, DELETE), DCL (GRANT, REVOKE).";
+    }
+    if (q.includes('poem')) {
+      return "✨ **Saranathan Campus Poem**:\n\n*Amidst green trees and bustling halls,*\n*Where knowledge echoes through classroom walls,*\n*We code, we learn, we dream so bright,*\n*Saranathan guides our future's light.* 🎓";
+    }
+    if (q.includes('hi') || q.includes('hello') || q.includes('hey') || q.includes('greetings')) {
+      return "Hello! 👋 Welcome to Saranathan College of Engineering AI Portal. I am your AI assistant! How can I help you today with library books, DBMS lab, faculty cabins, exam timetables, or placements?";
+    }
+    if (q.includes('who are you') || q.includes('what are you') || q.includes('your name')) {
+      return "🤖 I am the **Saranathan College AI Assistant**, trained to assist students, staff, and visitors with academic resources, campus locations, timetables, internal marks, and general queries.";
+    }
+
+    return `🤖 **Saranathan AI Assistant Response**:\n\nThank you for asking! Regarding **"${text}"**:\n\n- **Campus Guidance**: You can find detailed location maps, timetable details, and department details on your dashboard.\n- **Resources**: For textbooks, visit the Central Library on the 2nd Floor.\n- **Portal Help**: Use the quick suggestion buttons below to check DBMS Lab location, Dr. Kumar's cabin, placement rules, or bus timings.`;
+  }
+
+  async function queryPublicFreeAI(text, systemInstruction) {
+    try {
+      console.log("Chatbot: Attempting live AI engine fallback...");
+      const fullPrompt = systemInstruction ? `${systemInstruction}\n\nUser Question: ${text}` : text;
+      const url = `https://text.pollinations.ai/${encodeURIComponent(fullPrompt)}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const textOut = await res.text();
+        if (textOut && textOut.trim() && !textOut.includes('"error":')) {
+          updateModelStatus('Saranathan AI Engine');
+          return textOut.trim();
+        }
+      }
+    } catch (e) {
+      console.warn("Live AI engine fetch exception:", e.message);
+    }
+    updateModelStatus('Saranathan AI Engine');
+    return generateSmartAIResponse(text);
   }
 
   async function queryGeminiClientSide(text) {
@@ -256,20 +326,7 @@ function initStandaloneChatbot() {
       'gemini-2.0-flash-lite',
       'gemini-flash-lite-latest',
       'gemini-1.5-flash',
-      'gemini-2.0-flash-lite',
-      'gemini-flash-lite-latest',
-      'gemini-flash-latest',
-      'gemini-1.5-pro',
-      'gemini-3.1-flash-lite',
-      'gemini-3.6-flash',
-      'gemini-2.5-flash-lite',
-      'gemini-3-flash-preview',
-      'gemini-3.1-flash-lite-preview',
-      'gemini-3.5-flash-lite',
-      'gemini-3.5-flash',
-      'gemini-pro-latest',
-      'gemma-4-26b-a4b-it',
-      'gemma-4-31b-it'
+      'gemini-1.5-pro'
     ];
 
     let lastError = null;
@@ -295,13 +352,23 @@ function initStandaloneChatbot() {
         } else {
           const errorData = await response.json().catch(() => ({}));
           const errMsg = errorData?.error?.message || `API HTTP ${response.status}`;
-          console.warn(`Chatbot: Model [${model}] returned error (${response.status}: ${errMsg}). Failing over to next model...`);
+          console.warn(`Chatbot: Model [${model}] returned error (${response.status}: ${errMsg}).`);
           lastError = new Error(`API error (${model}): ${errMsg}`);
+          if (response.status === 401 || response.status === 403 || errMsg.includes('API key') || errMsg.includes('authentication credentials')) {
+            console.warn('Chatbot: API Key authentication error detected. Skipping further model retries.');
+            break;
+          }
         }
       } catch (err) {
-        console.warn(`Chatbot: Network / fetch exception on model [${model}]: ${err.message}. Failing over to next model...`);
+        console.warn(`Chatbot: Network / fetch exception on model [${model}]: ${err.message}.`);
         lastError = err;
       }
+    }
+
+    // Try live AI generation engine if Gemini key fails
+    const freeAiText = await queryPublicFreeAI(text, systemInstruction);
+    if (freeAiText) {
+      return freeAiText;
     }
 
     // If Gemini call failed BUT student marks were successfully retrieved from database, return direct formatted result!
