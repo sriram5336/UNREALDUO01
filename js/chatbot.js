@@ -160,7 +160,7 @@ function initStandaloneChatbot() {
     return result.join('');
   }
   
-  const GEMINI_API_KEY = 'AQ.Ab8RN6KskGwotkmcExmDDXkXGM3abSYetfuxoNF2DSEj2FVOEQ';
+  const GEMINI_API_KEY = 'AQ.Ab8RN6IQg8Jm_wdGGN7INZgncCrPJHZY7lV3NS1AeEftnE4DvA';
 
   async function queryGeminiClientSide(text) {
     const credentials = extractCredentials(text);
