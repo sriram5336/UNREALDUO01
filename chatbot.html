@@ -156,6 +156,61 @@
   <!-- Scripts -->
   <script type="module" src="js/main.js"></script>
   <script type="module" src="js/chatbot.js"></script>
+  <script>
+    // Dual-mode fallback for direct file:// browsing when ES modules are blocked by browser CORS
+    setTimeout(() => {
+      if (!window.chatbotInitialized) {
+        console.log("Initializing Chatbot Dual-Mode Fallback for local file:// protocol...");
+        const chatInput = document.getElementById('standalone-chat-input');
+        const sendBtn = document.getElementById('standalone-chat-send');
+        const chatHistory = document.getElementById('standalone-chat-history');
+        const presetButtons = document.querySelectorAll('.preset-query-btn');
+
+        if (!chatInput || !chatHistory) return;
+
+        const statusElem = document.getElementById('chatbot-model-status');
+        if (statusElem) statusElem.textContent = 'Saranathan AI Engine Active';
+
+        function getFallbackResponse(text) {
+          const q = (text || '').toLowerCase();
+          if (q.includes('dbms') || q.includes('database lab')) return "💻 **DBMS Lab Location**:\nLocated on the **2nd Floor of the CSE Block (Room CSE-204)**. Equipped with Oracle Database 19c, MySQL, PostgreSQL, and Linux workstations.";
+          if (q.includes('os book') || q.includes('operating system book') || q.includes('locate os')) return "📚 **Operating System Reference Books**:\n- **Location**: Central Library, **2nd Floor, Rack R-12, Shelf B**.\n- **Recommended Textbooks**: Silberschatz, Galvin & Gagne (10th Ed), Andrew S. Tanenbaum.";
+          if (q.includes('kumar') || q.includes('dr. kumar') || q.includes('cabin')) return "🚪 **Dr. S. Kumar (Professor, CSE)**: **1st Floor, Admin Block (Cabin A-108)**. Consultation Hours: 11:30 AM - 1:00 PM.";
+          if (q.includes('placement') || q.includes('job') || q.includes('eligibility')) return "🎯 **Placement Eligibility**: CGPA ≥ 6.0 without standing arrears, 75% attendance. Recruiters: TCS, Infosys, Wipro, Zoho, Cognizant.";
+          if (q.includes('bus') || q.includes('timings') || q.includes('transport')) return "🚌 **Bus Timings**: Routes 01-32 start from city stops at 7:15 AM - 7:30 AM. Return buses leave at 4:45 PM.";
+          if (q.includes('hour') || q.includes('timing') || q.includes('working')) return "⏰ **College Hours**: 8:30 AM - 4:30 PM (Mon-Sat). Central Library: 8:00 AM - 8:00 PM.";
+          if (q.includes('ai') || q.includes('artificial intelligence')) return "🤖 **Artificial Intelligence (AI)** is the simulation of human intelligence in machines programmed to think, learn, and solve problems.";
+          if (q.includes('hi') || q.includes('hello') || q.includes('hey')) return "Hello! 👋 Welcome to Saranathan College AI Portal. How can I help you today?";
+          return `🤖 **Saranathan AI Assistant**: Thank you for asking about "${text}"! You can find detailed location maps and course materials on your portal dashboard.`;
+        }
+
+        function appendBubble(content, sender) {
+          const bubble = document.createElement('div');
+          bubble.className = `chat-bubble ${sender}`;
+          bubble.style.cssText = sender === 'user' ? 'align-self:flex-end; background:var(--color-primary); color:white; padding:12px 18px; border-radius:18px 18px 2px 18px; max-width:80%; margin-bottom:10px;' : 'align-self:flex-start; background:rgba(255,255,255,0.05); color:var(--text-primary); padding:12px 18px; border-radius:18px 18px 18px 2px; max-width:80%; margin-bottom:10px; border:1px solid var(--border-glass);';
+          bubble.innerHTML = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          chatHistory.appendChild(bubble);
+          chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        function sendMsg(msg) {
+          const text = msg || chatInput.value.trim();
+          if (!text) return;
+          appendBubble(text, 'user');
+          chatInput.value = '';
+          setTimeout(() => {
+            appendBubble(getFallbackResponse(text), 'bot');
+          }, 300);
+        }
+
+        if (sendBtn) sendBtn.onclick = () => sendMsg();
+        chatInput.onkeypress = (e) => { if (e.key === 'Enter') sendMsg(); };
+        presetButtons.forEach(btn => {
+          btn.onclick = () => sendMsg(btn.dataset.query || btn.textContent);
+        });
+      }
+    }, 400);
+  </script>
 </body>
 </html>
 

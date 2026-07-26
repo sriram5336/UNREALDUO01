@@ -58,6 +58,11 @@ async function generateGeminiResponse({ apiKey, model, message, systemInstructio
       } else {
         const text = await res.text().catch(() => '');
         lastError = new Error(`Gemini model ${m} failed: ${res.status} ${res.statusText} ${text}`);
+        if (res.status === 401 || res.status === 403 || text.includes('API key') || text.includes('authentication credentials')) {
+          console.warn(`Gemini API key error on model ${m}. Stopping further retries.`);
+          break;
+        }
+        console.warn(`Gemini model ${m} returned HTTP ${res.status}. Trying next model...`);
       }
     } catch (err) {
       lastError = err;
